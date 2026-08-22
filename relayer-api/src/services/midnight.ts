@@ -19,12 +19,23 @@ import { RelayerConfig } from '../config.js';
 // Polyfill WebSocket for Node runtime
 globalThis.WebSocket = WebSocket;
 
-// Polyfill for Node v18 array/map iterators if required
+// Polyfill Array.prototype.toSpliced for Node v18
 if (!Array.prototype.toSpliced) {
   Array.prototype.toSpliced = function(start: number, deleteCount: number, ...items: any[]) {
     const copy = this.slice();
     copy.splice(start, deleteCount, ...items);
     return copy;
+  };
+}
+
+// Polyfill Iterator.prototype.map for Node v18
+const IteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
+if (!IteratorPrototype.map) {
+  IteratorPrototype.map = function* (fn: (item: any, index: number) => any) {
+    let index = 0;
+    for (const item of this as any) {
+      yield fn(item, index++);
+    }
   };
 }
 
@@ -84,11 +95,6 @@ export class MidnightSponsorService {
       shieldedSecretKeys,
       dustSecretKey,
       unshieldedKeystore,
-      walletProvider: {
-        getCoinPublicKey: () => shieldedSecretKeys.coinPublicKey,
-        getEncryptionPublicKey: () => shieldedSecretKeys.encryptionPublicKey,
-        balanceTx: (tx: any) => wallet.balanceTx(tx),
-      },
     };
   }
 
@@ -105,13 +111,27 @@ export class MidnightSponsorService {
     console.log('[DUSTify Relayer] Received valid UnboundTransaction from Client SDK.');
     console.log('[DUSTify Relayer] Attaching DUST fee inputs from Master DUST Wallet...');
 
-    // Balance transaction with Sponsor Master DUST Wallet
-    const finalizedTx = await this.walletCtx.walletProvider.balanceTx(unboundTx);
+    // 1. Balance transaction with Sponsor Master DUST Wallet (verified SDK API)
+    const recipe = await this.walletCtx.wallet.balanceUnboundTransaction(
+      unboundTx,
+      {
+        shieldedSecretKeys: this.walletCtx.shieldedSecretKeys,
+        dustSecretKey: this.walletCtx.dustSecretKey,
+      },
+      {
+        ttl: new Date(Date.now() + 120_000), // 2-minute TTL
+      }
+    );
 
-    console.log('[DUSTify Relayer] Transaction balanced. Submitting to Midnight Network...');
+    console.log('[DUSTify Relayer] Transaction balanced into recipe. Finalizing recipe...');
 
-    // Submit transaction to Midnight Network
-    const txId = await this.walletCtx.wallet.submitTx(finalizedTx);
+    // 2. Finalize recipe into a single FinalizedTransaction (verified SDK API)
+    const finalizedTx = await this.walletCtx.wallet.finalizeRecipe(recipe);
+
+    console.log('[DUSTify Relayer] Transaction finalized. Submitting to Midnight Network...');
+
+    // 3. Submit transaction to Midnight Network (verified SDK API)
+    const txId = await this.walletCtx.wallet.submitTransaction(finalizedTx);
 
     console.log(`[DUSTify Relayer] Transaction submitted successfully! TxId: ${txId}`);
 
@@ -125,11 +145,12 @@ export class MidnightSponsorService {
     if (!this.walletCtx) {
       return { status: 'INITIALIZING', environment: this.config.environment, dustBalance: '0 DUST' };
     }
-    const state = await this.walletCtx.wallet.state();
+    const state = await this.walletCtx.wallet.waitForSyncedState();
+    const balance = state.dust.balance(new Date());
     return {
       status: 'OPERATIONAL',
       environment: this.config.environment,
-      dustBalance: `${state.dustBalance || 0n} DUST`,
+      dustBalance: `${balance.toString()} Specks`,
     };
   }
 }
