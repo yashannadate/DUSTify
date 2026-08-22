@@ -1,0 +1,15 @@
+{
+  "name": "dustify-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "contracts",
+    "relayer-api",
+    "client-sdk",
+    "demo-dapp"
+  ],
+  "scripts": {
+    "test:real": "npx tsx experiments/sponsorship-poc/real-world-validation.ts"
+  }
+}

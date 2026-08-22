@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.env
+*.env
+*.local
+.DS_Store
+Thumbs.db
+*.log
+/tmp/
+real-handoff.bin
+level-db/
+user-a-state/
+sponsor-b-state/
+*.bin
+.turbo/
