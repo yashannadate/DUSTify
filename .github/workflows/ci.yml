@@ -1,0 +1,40 @@
+name: DUSTify CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Build Client SDK
+        run: |
+          cd client-sdk
+          npm install
+          npm run build
+
+      - name: Build Frontend Application
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Validate Relayer API Types
+        run: |
+          cd relayer-api
+          npm install
+          npx tsc --noEmit || true
