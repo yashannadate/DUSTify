@@ -148,7 +148,7 @@ app.post('/api/v1/relay', authMiddleware, async (req, res) => {
 });
 
 // Start Express Relayer Server
-const server = app.listen(config.port, async () => {
+const server = app.listen(config.port, '0.0.0.0', async () => {
   console.log(`================================================================`);
   console.log(`⚡ DUSTify Master Relayer API running on http://localhost:${config.port}`);
   console.log(`   Midnight Network Target: ${config.environment.toUpperCase()}`);
