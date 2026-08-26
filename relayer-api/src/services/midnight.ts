@@ -194,7 +194,7 @@ export class MidnightSponsorService {
 
       const wallet = await WalletFacade.init({
         configuration: walletConfig,
-        shielded: async (cfg) => {
+        shielded: async (cfg: any) => {
           const cls = ShieldedWallet(cfg);
           if (savedState.shielded !== undefined) {
             try {
@@ -205,7 +205,7 @@ export class MidnightSponsorService {
           }
           return cls.startWithSecretKeys(shieldedSecretKeys);
         },
-        unshielded: async (cfg) => {
+        unshielded: async (cfg: any) => {
           const cls = UnshieldedWallet(cfg);
           if (savedState.unshielded !== undefined) {
             try {
@@ -216,7 +216,7 @@ export class MidnightSponsorService {
           }
           return cls.startWithPublicKey(PublicKey.fromKeyStore(unshieldedKeystore));
         },
-        dust: async (cfg) => {
+        dust: async (cfg: any) => {
           const cls = DustWallet(cfg);
           if (savedState.dust !== undefined) {
             try {

@@ -34,7 +34,7 @@ jobs:
       - name: Run SDK Unit Tests
         run: |
           cd client-sdk
-          node --loader tsx ../tests/unit/sdk-serialization.test.ts || npx tsx ../tests/unit/sdk-serialization.test.ts || true
+          npx tsx ../tests/unit/sdk-serialization.test.ts
 
       - name: Validate Relayer API Types
         run: |

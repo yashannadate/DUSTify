@@ -2,12 +2,9 @@
 
 > **Zero-friction DUST sponsorship and transaction relaying infrastructure for the Midnight Network.**
 
-[![Midnight Network](https://img.shields.io/badge/Midnight-Preview_Network-7928ca?logo=midnight&logoColor=white)](https://midnight.network)
-[![Network: Preview](https://img.shields.io/badge/Network_ID-preview-blue)](https://indexer.preview.midnight.network)
-[![DUSTify CI](https://github.com/yashannadate/DUSTify/actions/workflows/ci.yml/badge.svg)](https://github.com/yashannadate/DUSTify/actions/workflows/ci.yml)
-[![Node.js](https://img.shields.io/badge/Node.js-v18%20%7C%20v22-green?logo=node.js&logoColor=white)](https://nodejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-00f2fe.svg)](https://opensource.org/licenses/MIT)
+[![Midnight Network](https://img.shields.io/badge/Midnight-Network-7928ca?logo=midnight&logoColor=white)](https://midnight.network)
+[![Smart Contracts](https://img.shields.io/badge/Smart_Contracts-Compact_0.22-orange)](https://docs.midnight.network)
+[![Network](https://img.shields.io/badge/Network_ID-preview-blue)](https://indexer.preview.midnight.network)
 
 ---
 
