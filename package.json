@@ -12,9 +12,10 @@
   "scripts": {
     "build": "npm run build --prefix client-sdk && npm run build --prefix frontend",
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev:relayer": "npm run dev --prefix relayer-api",
-    "test:relayer": "npx tsx experiments/preview-validation/test-relayer-endpoints.ts",
-    "test:real": "npx tsx experiments/sponsorship-poc/real-world-validation.ts"
+    "dev:relayer": "wsl bash -c \"cd /mnt/d/DUSTify/relayer-api && npx tsx src/index.ts\"",
+    "dev:relayer:linux": "npm run dev --prefix relayer-api",
+    "test:relayer": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx experiments/preview-validation/test-relayer-endpoints.ts\"",
+    "test:real": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx experiments/sponsorship-poc/real-world-validation.ts\""
   },
   "keywords": [
     "midnight",
