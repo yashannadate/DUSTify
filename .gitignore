@@ -17,5 +17,7 @@ sponsor-b-state/
 *.bin
 .turbo/
 .data/
+!.data/README.md
+.data/wallet-state/
 runtime-data/
 .midnight-wallet-state/

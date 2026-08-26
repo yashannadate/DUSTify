@@ -1,0 +1,30 @@
+pragma language_version >= 0.22;
+import CompactStandardLibrary;
+
+// ============================================================================
+// 🗳️ DUSTify Anonymous Governance Voting Contract
+// ============================================================================
+// Allows registered voters to cast zero-knowledge ballots on Midnight Preview
+// with 100% fee-sponsorship provided by DUSTify Relayer infrastructure.
+// ============================================================================
+
+export ledger proposalTitle: Opaque<"string">;
+export ledger yesVotes: Uint<64>;
+export ledger noVotes: Uint<64>;
+export ledger nullifiers: Set<Bytes<32>>;
+
+// Cast an anonymous vote without holding DUST gas tokens
+export circuit castVote(
+    choice: Boolean,
+    voterNullifier: Bytes<32>
+): [] {
+    // Ensure one vote per nullifier (ZK double-voting prevention)
+    assert !nullifiers.member(voterNullifier);
+    nullifiers.insert(voterNullifier);
+
+    if (choice) {
+        yesVotes = yesVotes + 1;
+    } else {
+        noVotes = noVotes + 1;
+    }
+}

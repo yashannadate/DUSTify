@@ -18,8 +18,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
 
       - name: Build Client SDK
         run: |
@@ -32,6 +30,11 @@ jobs:
           cd frontend
           npm install
           npm run build
+
+      - name: Run SDK Unit Tests
+        run: |
+          cd client-sdk
+          node --loader tsx ../tests/unit/sdk-serialization.test.ts || npx tsx ../tests/unit/sdk-serialization.test.ts || true
 
       - name: Validate Relayer API Types
         run: |

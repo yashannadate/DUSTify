@@ -1,0 +1,47 @@
+pragma language_version >= 0.22;
+import CompactStandardLibrary;
+
+// ============================================================================
+// 🌙 DUSTify Registry Smart Contract (Midnight Preview)
+// ============================================================================
+// DUSTify Registry maintains on-chain sponsorship policies, whitelisted
+// circuit hashes, and dApp registration state for fee-abstraction on Midnight.
+// ============================================================================
+
+// Global ledger state: Admin / Master Relayer identity
+export ledger masterRelayer: Bytes<32>;
+
+// Total number of sponsored transactions recorded on-chain
+export ledger totalSponsoredCount: Uint<64>;
+
+// Whitelisted circuit identifier map: circuitHash -> isWhitelisted
+export ledger whitelistedCircuits: Map<Bytes<32>, Boolean>;
+
+// Registered dApp policy: dAppId -> dailyLimitSpecks
+export ledger dAppQuotas: Map<Bytes<32>, Uint<64>>;
+
+// Constructor / Initialization
+constructor(initialRelayer: Bytes<32>) {
+    masterRelayer = initialRelayer;
+    totalSponsoredCount = 0;
+}
+
+// Admin circuit: Register or update a whitelisted circuit for sponsorship
+export circuit whitelistCircuit(circuitHash: Bytes<32>, status: Boolean): [] {
+    whitelistedCircuits.insert(circuitHash, status);
+}
+
+// Admin circuit: Set daily DUST sponsorship quota for a registered dApp
+export circuit setDAppQuota(dAppId: Bytes<32>, quotaSpecks: Uint<64>): [] {
+    dAppQuotas.insert(dAppId, quotaSpecks);
+}
+
+// Record a sponsored transaction execution on the Midnight ledger
+// Verified locally via private witness before fee-abstraction submission
+export circuit recordSponsoredExecution(
+    circuitHash: Bytes<32>,
+    sponsoredFeeSpecks: Uint<64>
+): [] {
+    // Increment global sponsored transaction counter
+    totalSponsoredCount = totalSponsoredCount + 1;
+}

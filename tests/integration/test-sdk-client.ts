@@ -13,9 +13,9 @@ async function testSdk() {
   const status = await client.getStatus();
   console.log('Status via SDK:', JSON.stringify(status, null, 2));
 
-  // Test relaying a dummy payload to check RELAYER_NOT_FUNDED handling
+  // Test relaying sample payload to verify fee-sponsorship handling
   console.log('Sending sample payload to relayer...');
-  const result = await client.sponsorAndSubmit('00112233445566778899aabbccddeeff', 'testCircuit');
+  const result = await client.sponsorAndSubmit('00112233445566778899aabbccddeeff', 'storeMessage');
   console.log('Relay Result:', JSON.stringify(result, null, 2));
 }
 

@@ -1,12 +1,11 @@
-import { loadConfig } from '../../relayer-api/src/config.js';
 import { MidnightSponsorService } from '../../relayer-api/src/services/midnight.js';
+import { config } from '../../relayer-api/src/config.js';
 
-async function main() {
+async function testRelayerService() {
   console.log('Testing MidnightSponsorService initialization & status check...');
-  const config = loadConfig();
-  console.log('Config loaded. Network:', config.environment);
-  console.log('Indexer HTTP:', config.indexerHttpUrl);
-  console.log('Node RPC:', config.nodeRpcUrl);
+  console.log(`Config loaded. Network: ${config.environment}`);
+  console.log(`Indexer HTTP: ${config.indexerHttpUrl}`);
+  console.log(`Node RPC: ${config.nodeRpcUrl}`);
 
   const sponsor = new MidnightSponsorService(config);
   console.log('Initialized service instance. Fetching status before wallet start...');
@@ -15,16 +14,23 @@ async function main() {
 
   console.log('Calling sponsor.initialize()...');
   await sponsor.initialize();
+
   console.log('Initialized wallet facade. Waiting 2 seconds...');
   await new Promise(r => setTimeout(r, 2000));
 
   const liveStatus = await sponsor.getStatus();
   console.log('Live Relayer Status:', JSON.stringify(liveStatus, null, 2));
-  console.log('✅ MidnightSponsorService status check passed!');
-  process.exit(0);
+
+  if (liveStatus.service === 'DUSTify Relayer API' && liveStatus.sponsorAddress) {
+    console.log('✅ MidnightSponsorService status check passed!');
+    process.exit(0);
+  } else {
+    console.error('❌ Status check failed!');
+    process.exit(1);
+  }
 }
 
-main().catch(err => {
-  console.error('❌ Relayer test error:', err);
+testRelayerService().catch((err) => {
+  console.error('Fatal error during test:', err);
   process.exit(1);
 });

@@ -616,12 +616,23 @@ DUSTify Warm Sync:  █░░░░░░░░░░░░░░░░░░░
 
 ```
 DUSTify/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                       # GitHub Actions CI workflow
+├── contracts/                           # Compact Smart Contracts & Managed Artifacts
+│   ├── src/
+│   │   ├── DustifyRegistry.compact      # Master sponsorship registry & quota policy
+│   │   ├── Voting.compact               # Anonymous governance voting showcase
+│   │   └── hello-world.compact          # Public state mutation showcase
+│   ├── artifacts/                       # Generated keys, ZKIR, and contract runtime bindings
+│   └── README.md                        # Smart contract compilation & deployment docs
 ├── client-sdk/                          # @dustify/sdk Client Library
 │   ├── src/
 │   │   ├── DustifyClient.ts             # Main SDK class & binary serialization
 │   │   └── index.ts                     # Public SDK exports & TypeScript types
 │   ├── package.json
-│   └── tsconfig.json
+│   ├── tsconfig.json
+│   └── README.md
 ├── relayer-api/                         # DUSTify Master Relayer Backend
 │   ├── src/
 │   │   ├── config.ts                    # Zero-hardcoding environment configuration
@@ -631,44 +642,58 @@ DUSTify/
 │   │   └── services/
 │   │       └── midnight.ts              # MidnightSponsorService & balanceUnboundTransaction
 │   ├── package.json
-│   └── tsconfig.json
+│   ├── tsconfig.json
+│   └── README.md
 ├── frontend/                            # React + Vite + Tailwind CSS Dashboard
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Navbar.tsx               # Status badges & network indicator
-│   │   │   ├── HeroSection.tsx          # Value proposition & metrics
-│   │   │   ├── FlowVisualizer.tsx       # 5-stage interactive pipeline visualizer
-│   │   │   ├── DemoExecutionSection.tsx # Interactive Voting & Message execution
-│   │   │   ├── RelayerMonitor.tsx       # Live endpoint telemetry & sponsor address
-│   │   │   ├── ComparisonSection.tsx    # Traditional vs DUSTify UX comparison
-│   │   │   ├── SdkPlayground.tsx        # Interactive code snippet explorer
+│   │   │   ├── Navbar.tsx               # Status badges & multi-tab navigation
+│   │   │   ├── OverviewPage.tsx         # System topology & friction comparison
+│   │   │   ├── DemoPage.tsx             # Interactive Voting & Message execution
+│   │   │   ├── RelayerPage.tsx          # Live endpoint telemetry & latency probe
+│   │   │   ├── DocsPage.tsx             # In-app developer guide & code snippets
 │   │   │   └── Footer.tsx               # Links & license
 │   │   ├── App.tsx                      # Main application view & telemetry polling
 │   │   ├── types.ts                     # Frontend TypeScript data interfaces
-│   │   ├── index.css                    # Tailwind styles & glowing aesthetics
+│   │   ├── index.css                    # Tailwind minimalist monochrome styling
 │   │   └── main.tsx                     # React DOM entry point
 │   ├── package.json
 │   ├── tailwind.config.js
-│   └── vite.config.ts
-├── contracts/                           # Compact Smart Contracts & Managed Assets
-│   ├── hello-world.compact              # State storage contract
-│   ├── Voting.compact                   # Anonymous governance voting contract
-│   └── managed/                         # Compiled contract artifacts, keys, and ZKIR
-├── experiments/                         # Real-World Preview Validation Experiments
-│   └── preview-validation/
-│       ├── test-relayer-endpoints.ts    # Relayer service initialization test
-│       ├── test-sdk-client.ts           # SDK integration test with live Relayer
-│       └── wallet-check.js              # Persistence & sync timing diagnostic
-├── docs/                                # Project Documentation & Social Assets
-│   └── x-profile.md                     # Official Product X (Twitter) profile & launch thread
-├── .github/
-│   └── workflows/
-│       └── ci.yml                       # GitHub Actions CI workflow
+│   ├── vite.config.ts
+│   └── README.md
+├── scripts/                             # Operational & Automation Shell Scripts
+│   ├── setup_wsl.sh                     # WSL2 environment bootstrap & verification
+│   ├── compile.sh                       # Monorepo build script (SDK + Frontend)
+│   ├── deploy_preview.sh                # Contract deployment script on Midnight Preview
+│   └── demo.sh                          # Interactive demo launcher
+├── tests/                               # Test Suites & Validation Experiments
+│   ├── unit/
+│   │   └── sdk-serialization.test.ts    # Unit test for SDK payload encoding
+│   ├── integration/
+│   │   ├── test-relayer-endpoints.ts    # Relayer service initialization test
+│   │   └── test-sdk-client.ts           # SDK integration test with live Relayer
+│   └── sponsorship/
+│       ├── real-world-validation.ts     # Preview network validation harness
+│       └── verify-preview-endpoints.js  # Network connectivity probe
+├── docs/                                # Technical Documentation & Architecture
+│   ├── ARCHITECTURE.md                  # Comprehensive architectural specification
+│   ├── PROTOCOL_VALIDATION.md           # Empirical verification results & benchmarks
+│   ├── API.md                           # Complete REST API & SDK reference
+│   ├── SECURITY.md                      # Security model, threat analysis & privacy
+│   ├── SETUP.md                         # Local development & WSL2 setup guide
+│   ├── DEMO.md                          # Hackathon demo & walkthrough script
+│   └── x-profile.md                     # Product X (Twitter) launch strategy
+├── assets/                              # Visual Assets & Blueprints
+│   ├── architecture/
+│   └── screenshots/
 ├── .data/                               # Persisted wallet sync checkpoints (gitignored)
-│   └── wallet-state/preview/
+│   ├── wallet-state/preview/
+│   └── README.md
 ├── .env.example                         # Environment configuration template
 ├── .gitignore                           # Git ignore rules
 ├── package.json                         # Monorepo workspaces configuration
+├── PROPOSAL.md                          # Midnight Moonshots Level 4 Project Proposal
+├── vercel.json                          # Vercel deployment configuration
 └── README.md                            # Main project documentation
 ```
 
@@ -685,7 +710,7 @@ DUSTify/
 - [x] Built React + Vite + Tailwind developer dashboard & execution simulator
 - [x] Configured GitHub Actions CI workflow
 - [x] Prepared Product X (Twitter) profile & launch thread
-- [x] 17 atomic, chronological Git commits
+- [x] 22 atomic, chronological Git commits
 - [ ] Complete Preview faucet tNIGHT funding & DUST UTXO registration
 - [ ] Record final live execution video on Midnight Preview
 
@@ -720,13 +745,17 @@ In the interest of technical integrity and transparency:
 | Deliverable | Location in Repository | Verification Command / URL |
 | :--- | :--- | :--- |
 | **Monorepo Codebase** | Root Workspace | [GitHub Repository](https://github.com/yashannadate/DUSTify) |
+| **Proposal Document** | [`PROPOSAL.md`](PROPOSAL.md) | Level 4 Moonshot Proposal |
 | **Relayer Backend** | [`relayer-api/src/`](relayer-api/src) | `npm run dev:relayer` (Port 3001) |
 | **Client SDK** | [`client-sdk/src/`](client-sdk/src) | `npm run build --prefix client-sdk` |
 | **Frontend Application** | [`frontend/src/`](frontend/src) | `npm run dev:frontend` (Port 5173) |
 | **CI/CD Workflow** | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | [GitHub Actions Runs](https://github.com/yashannadate/DUSTify/actions) |
-| **Telemetry Test** | [`experiments/preview-validation/test-relayer-endpoints.ts`](experiments/preview-validation/test-relayer-endpoints.ts) | `npm run test:relayer` |
+| **Telemetry Test** | [`tests/integration/test-relayer-endpoints.ts`](tests/integration/test-relayer-endpoints.ts) | `npm run test:relayer` |
+| **SDK Integration Test** | [`tests/integration/test-sdk-client.ts`](tests/integration/test-sdk-client.ts) | `npm run test:sdk` |
+| **Unit Test Suite** | [`tests/unit/sdk-serialization.test.ts`](tests/unit/sdk-serialization.test.ts) | `npm run test:unit` |
+| **Architecture Specification** | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Markdown Architecture Deep-Dive |
+| **Security & Threat Model** | [`docs/SECURITY.md`](docs/SECURITY.md) | Security Specification |
 | **Product X Profile** | [`docs/x-profile.md`](docs/x-profile.md) | Markdown asset specification |
-| **Commit History** | Git Log | `git log --oneline` (17 commits) |
 
 ---
 

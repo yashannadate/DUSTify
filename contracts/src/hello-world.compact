@@ -1,0 +1,15 @@
+pragma language_version >= 0.22;
+import CompactStandardLibrary;
+
+// ============================================================================
+// 📨 DUSTify Public Message Storage Demo Contract
+// ============================================================================
+// Stores public state mutations on the Midnight Preview ledger.
+// Proved locally via private witness at 0 DUST user cost.
+// ============================================================================
+
+export ledger message: Opaque<"string">;
+
+export circuit storeMessage(customMessage: Opaque<"string">): [] {
+    message = disclose(customMessage);
+}
