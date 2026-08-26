@@ -1,90 +1,164 @@
 import React from 'react';
-import { Zap, ExternalLink } from 'lucide-react';
+import { ExternalLink, RefreshCw } from 'lucide-react';
 import { RelayerStatus } from '../types';
 
+export type NavTab = 'overview' | 'demo' | 'relayer' | 'docs';
+
 interface NavbarProps {
+  activeTab: NavTab;
+  setActiveTab: (tab: NavTab) => void;
   relayerStatus: RelayerStatus | null;
   isLoading: boolean;
   onRefresh: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ relayerStatus, onRefresh }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  relayerStatus,
+  isLoading,
+  onRefresh,
+}) => {
   const isOnline = Boolean(relayerStatus);
+  const isSynced = relayerStatus?.isSynced ?? false;
   const hasDust = relayerStatus?.sponsorDustAvailability?.hasDust ?? false;
 
   return (
-    <header className="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 lg:px-8 py-3.5">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-dust-cyan via-dust-blue to-dust-violet p-0.5 shadow-lg shadow-dust-cyan/20">
-            <div className="w-full h-full bg-midnight-950 rounded-[10px] flex items-center justify-center">
-              <Zap className="w-5 h-5 text-dust-cyan fill-dust-cyan/20" />
+    <header className="border-b border-border-subtle bg-surface-300 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+        {/* Brand & Tabs */}
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded bg-zinc-100 text-zinc-950 flex items-center justify-center font-mono font-bold text-xs">
+              D
             </div>
-            <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-dust-cyan opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-dust-cyan"></span>
+            <span className="font-bold text-sm tracking-tight text-zinc-100 font-mono">
+              DUSTify
+            </span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
+              preview
             </span>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold font-display tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-dust-cyan">
-                DUSTify
-              </span>
-              <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-dust-violet/20 text-dust-purple border border-dust-purple/30">
-                PREVIEW
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 font-sans hidden sm:block">
-              Zero-Friction Gas Relayer for Midnight
-            </p>
-          </div>
+
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                activeTab === 'overview'
+                  ? 'bg-zinc-800 text-zinc-100'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+              }`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('demo')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                activeTab === 'demo'
+                  ? 'bg-zinc-800 text-zinc-100'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+              }`}
+            >
+              Gasless Demo
+            </button>
+            <button
+              onClick={() => setActiveTab('relayer')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                activeTab === 'relayer'
+                  ? 'bg-zinc-800 text-zinc-100'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+              }`}
+            >
+              Relayer & Telemetry
+            </button>
+            <button
+              onClick={() => setActiveTab('docs')}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                activeTab === 'docs'
+                  ? 'bg-zinc-800 text-zinc-100'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+              }`}
+            >
+              Documentation
+            </button>
+          </nav>
         </div>
 
-        {/* Live Status Indicators */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          {/* Network Badge */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-            <span className="text-slate-400">Network:</span>
-            <span className="font-semibold text-slate-200">Midnight Preview</span>
-          </div>
-
-          {/* Relayer Status Badge */}
+        {/* Right Status Indicators */}
+        <div className="flex items-center gap-3">
+          {/* Relayer Ping Status */}
           <button
             onClick={onRefresh}
-            title="Click to refresh status"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-xs cursor-pointer"
+            title="Click to refresh telemetry"
+            className="flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs transition-colors cursor-pointer"
           >
-            {isOnline ? (
-              <>
-                <div className={`w-2 h-2 rounded-full ${hasDust ? 'bg-emerald-400' : 'bg-amber-400'} animate-pulse`}></div>
-                <span className="text-slate-300 font-medium">
-                  {hasDust ? 'Relayer Active' : 'Relayer Ready'}
-                </span>
-                <span className="text-[10px] font-mono text-slate-400 hidden lg:inline">
-                  ({hasDust ? 'Funded' : 'Awaiting DUST'})
-                </span>
-              </>
-            ) : (
-              <>
-                <div className="w-2 h-2 rounded-full bg-slate-500"></div>
-                <span className="text-slate-400 font-medium">Relayer Standby</span>
-              </>
-            )}
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isOnline
+                  ? hasDust
+                    ? 'bg-emerald-400'
+                    : 'bg-amber-400'
+                  : 'bg-zinc-600'
+              }`}
+            />
+            <span className="text-zinc-300 font-mono text-[11px]">
+              {isOnline
+                ? hasDust
+                  ? 'Relayer Ready (Funded)'
+                  : 'Relayer Ready (0 DUST)'
+                : 'Relayer Standby'}
+            </span>
+            <RefreshCw className={`w-3 h-3 text-zinc-500 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
 
-          {/* Quick Links */}
+          {/* GitHub Repo Link */}
           <a
             href="https://github.com/yashannadate/DUSTify"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-dust-cyan/10 to-dust-blue/10 hover:from-dust-cyan/20 hover:to-dust-blue/20 border border-dust-cyan/30 text-dust-cyan text-xs font-semibold transition-all shadow-sm shadow-dust-cyan/10"
+            className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 transition-colors"
+            title="GitHub Repository"
           >
-            <span>GitHub</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
+      </div>
+
+      {/* Mobile Tab Navigation */}
+      <div className="flex md:hidden border-t border-border-subtle px-2 py-1 gap-1 overflow-x-auto bg-surface-200">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`px-3 py-1 rounded text-xs whitespace-nowrap ${
+            activeTab === 'overview' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400'
+          }`}
+        >
+          Overview
+        </button>
+        <button
+          onClick={() => setActiveTab('demo')}
+          className={`px-3 py-1 rounded text-xs whitespace-nowrap ${
+            activeTab === 'demo' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400'
+          }`}
+        >
+          Demo
+        </button>
+        <button
+          onClick={() => setActiveTab('relayer')}
+          className={`px-3 py-1 rounded text-xs whitespace-nowrap ${
+            activeTab === 'relayer' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400'
+          }`}
+        >
+          Relayer
+        </button>
+        <button
+          onClick={() => setActiveTab('docs')}
+          className={`px-3 py-1 rounded text-xs whitespace-nowrap ${
+            activeTab === 'docs' ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-400'
+          }`}
+        >
+          Docs
+        </button>
       </div>
     </header>
   );

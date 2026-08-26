@@ -81,6 +81,15 @@ export interface SponsorResult {
   timestamp: number;
 }
 
+function resolvePersistDir(environment: string): string {
+  if (process.env.WALLET_PERSIST_DIR) return process.env.WALLET_PERSIST_DIR;
+  const inCwd = path.join(process.cwd(), '.data', 'wallet-state', environment);
+  if (fs.existsSync(inCwd)) return inCwd;
+  const inParent = path.join(process.cwd(), '..', '.data', 'wallet-state', environment);
+  if (fs.existsSync(inParent)) return inParent;
+  return inCwd;
+}
+
 export class MidnightSponsorService {
   private walletCtx: any = null;
   private config: RelayerConfig;
@@ -91,7 +100,7 @@ export class MidnightSponsorService {
 
   constructor(config: RelayerConfig) {
     this.config = config;
-    this.persistDir = path.join(process.cwd(), '.data', 'wallet-state', this.config.environment);
+    this.persistDir = resolvePersistDir(this.config.environment);
   }
 
   private deriveKeys(seed: string) {

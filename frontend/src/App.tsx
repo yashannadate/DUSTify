@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Navbar } from './components/Navbar';
-import { HeroSection } from './components/HeroSection';
-import { FlowVisualizer } from './components/FlowVisualizer';
-import { DemoExecutionSection } from './components/DemoExecutionSection';
-import { RelayerMonitor } from './components/RelayerMonitor';
-import { ComparisonSection } from './components/ComparisonSection';
-import { SdkPlayground } from './components/SdkPlayground';
+import { Navbar, NavTab } from './components/Navbar';
+import { OverviewPage } from './components/OverviewPage';
+import { DemoPage } from './components/DemoPage';
+import { RelayerPage } from './components/RelayerPage';
+import { DocsPage } from './components/DocsPage';
 import { Footer } from './components/Footer';
 import { RelayerStatus } from './types';
 
 export const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<NavTab>('overview');
   const [relayerStatus, setRelayerStatus] = useState<RelayerStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -23,13 +22,13 @@ export const App: React.FC = () => {
         const data = await response.json();
         setRelayerStatus(data);
       } else {
-        // Fallback default Preview state if relayer is running in background or another port
+        // Fallback default state
         setRelayerStatus({
           service: 'DUSTify Relayer API',
           version: '0.1.0',
           uptimeSeconds: 120,
           network: 'preview',
-          sponsorAddress: 'mn_unshielded1z9v5a3h8q90w7k5e2l4r8m6j1c0p3x7y2f8d',
+          sponsorAddress: 'mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3',
           sponsorWalletSyncStatus: 'SYNCED',
           isSynced: true,
           sponsorDustAvailability: {
@@ -47,13 +46,13 @@ export const App: React.FC = () => {
         });
       }
     } catch {
-      // Offline / standalone demo mode fallback
+      // Local fallback telemetry
       setRelayerStatus({
         service: 'DUSTify Relayer API',
         version: '0.1.0',
         uptimeSeconds: 60,
         network: 'preview',
-        sponsorAddress: 'mn_unshielded1z9v5a3h8q90w7k5e2l4r8m6j1c0p3x7y2f8d',
+        sponsorAddress: 'mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3',
         sponsorWalletSyncStatus: 'SYNCED',
         isSynced: true,
         sponsorDustAvailability: {
@@ -80,27 +79,33 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [fetchRelayerStatus]);
 
-  const scrollToDemo = () => {
-    document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToSdk = () => {
-    document.getElementById('sdk-section')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <div className="min-h-screen bg-midnight-950 text-slate-100 flex flex-col selection:bg-dust-cyan selection:text-midnight-950">
-      <Navbar relayerStatus={relayerStatus} isLoading={isLoading} onRefresh={fetchRelayerStatus} />
+    <div className="min-h-screen bg-background text-zinc-100 flex flex-col font-sans selection:bg-zinc-800 selection:text-zinc-100">
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        relayerStatus={relayerStatus}
+        isLoading={isLoading}
+        onRefresh={fetchRelayerStatus}
+      />
 
       <main className="flex-1">
-        <HeroSection onExploreDemo={scrollToDemo} onExploreSdk={scrollToSdk} />
-        <FlowVisualizer />
-        <DemoExecutionSection relayerStatus={relayerStatus} />
-        <RelayerMonitor relayerStatus={relayerStatus} isLoading={isLoading} onRefresh={fetchRelayerStatus} />
-        <ComparisonSection />
-        <div id="sdk-section">
-          <SdkPlayground />
-        </div>
+        {activeTab === 'overview' && (
+          <OverviewPage
+            relayerStatus={relayerStatus}
+            onGoToDemo={() => setActiveTab('demo')}
+            onGoToDocs={() => setActiveTab('docs')}
+          />
+        )}
+        {activeTab === 'demo' && <DemoPage relayerStatus={relayerStatus} />}
+        {activeTab === 'relayer' && (
+          <RelayerPage
+            relayerStatus={relayerStatus}
+            isLoading={isLoading}
+            onRefresh={fetchRelayerStatus}
+          />
+        )}
+        {activeTab === 'docs' && <DocsPage />}
       </main>
 
       <Footer />
