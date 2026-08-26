@@ -1,0 +1,13 @@
+pragma language_version >= 0.22;
+
+import CompactStandardLibrary;
+
+// Public ledger state for governance proposal votes
+export ledger proposalVotes: Map<Field, Uint<32>>;
+
+// Circuit to cast an anonymous vote on a proposal (0 DUST for user)
+export circuit castVote(proposalId: Field, voterHash: Bytes<32>): [] {
+    // Increment vote count on public ledger
+    const currentVotes = proposalVotes.member(proposalId) ? proposalVotes.lookup(proposalId) : 0;
+    proposalVotes.insert(proposalId, currentVotes + 1);
+}

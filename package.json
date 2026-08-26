@@ -7,9 +7,22 @@
     "contracts",
     "relayer-api",
     "client-sdk",
-    "demo-dapp"
+    "frontend"
   ],
   "scripts": {
+    "build": "npm run build --prefix client-sdk && npm run build --prefix frontend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:relayer": "npm run dev --prefix relayer-api",
+    "test:relayer": "npx tsx experiments/preview-validation/test-relayer-endpoints.ts",
     "test:real": "npx tsx experiments/sponsorship-poc/real-world-validation.ts"
-  }
+  },
+  "keywords": [
+    "midnight",
+    "dust",
+    "relayer",
+    "fee-abstraction",
+    "zero-knowledge"
+  ],
+  "author": "Yash Annadate",
+  "license": "MIT"
 }
