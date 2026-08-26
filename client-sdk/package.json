@@ -1,0 +1,25 @@
+{
+  "name": "@dustify/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "DUSTify Client SDK for Midnight Network Gasless & Fee-Abstracted Transactions",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "midnight",
+    "dust",
+    "relayer",
+    "fee-abstraction",
+    "zero-knowledge",
+    "web3"
+  ],
+  "author": "Yash Annadate",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
