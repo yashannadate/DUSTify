@@ -309,10 +309,18 @@ export class MidnightSponsorService {
     }
 
     // 1. Check sync state and DUST balance
-    const state = await this.walletCtx.wallet.waitForSyncedState();
-    const now = new Date();
-    const dustBalance = state.dust.balance(now);
-    this.lastKnownDustBalance = dustBalance;
+    let dustBalance = this.lastKnownDustBalance;
+    try {
+      const state = await Promise.race([
+        this.walletCtx.wallet.waitForSyncedState(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('sync_timeout')), 3000)),
+      ]);
+      const now = new Date();
+      dustBalance = state.dust.balance(now);
+      this.lastKnownDustBalance = dustBalance;
+    } catch {
+      // Use last known dust balance if sync wait takes longer
+    }
 
     if (dustBalance === 0n) {
       const err: any = new Error(
