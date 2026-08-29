@@ -10,7 +10,7 @@ DUSTify enables Midnight dApps to sponsor transaction fees for users. Users gene
 
 ---
 
-### 🌐 [Live App (https://dustify-midnight.vercel.app)](https://dustify-midnight.vercel.app) • 💻 [Local Dev Demo (http://localhost:5173)](http://localhost:5173) • 🎥 [Demo Video](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6) • 🐦 [Product X Profile (@dustifymidnight)](https://x.com/dustifymidnight) • 📁 [GitHub Repository](https://github.com/yashannadate/DUSTify)
+### 🌐 [Live App (https://dustify-midnight.vercel.app)](https://dustify-midnight.vercel.app) • 🎥 [Demo Video](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6)
 
 ---
 
