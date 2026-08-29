@@ -21,3 +21,5 @@ sponsor-b-state/
 .data/wallet-state/
 runtime-data/
 .midnight-wallet-state/
+
+.vercel

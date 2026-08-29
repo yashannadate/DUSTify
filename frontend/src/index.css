@@ -7,8 +7,8 @@
     @apply bg-background text-zinc-100 font-sans antialiased;
   }
   ::selection {
-    background-color: rgba(139, 92, 246, 0.3);
-    color: #a78bfa;
+    background-color: rgba(0, 30, 255, 0.35);
+    color: #ffffff;
   }
 }
 
@@ -19,23 +19,23 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #262626;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #383838;
 }
 
 /* Glass & Card utilities */
 .glass-card {
-  background: rgba(20, 20, 24, 0.7);
+  background: rgba(14, 14, 14, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card-hover {
@@ -43,8 +43,8 @@
 }
 
 .glass-card-hover:hover {
-  border-color: rgba(139, 92, 246, 0.3);
-  background: rgba(24, 24, 30, 0.85);
+  border-color: rgba(0, 30, 255, 0.4);
+  background: rgba(18, 18, 18, 0.85);
 }
 
 .code-block {

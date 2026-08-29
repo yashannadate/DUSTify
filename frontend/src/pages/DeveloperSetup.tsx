@@ -17,7 +17,7 @@ export const DeveloperSetup: React.FC = () => {
 // Initialize the DUSTify client
 const dustify = new DustifyClient({
   relayerUrl: 'http://localhost:3001',       // Or your production Relayer endpoint
-  apiKey: 'dustify_dev_key_preview_2026',    // Issued dApp API key
+  apiKey: process.env.DUSTIFY_API_KEY || '<YOUR_API_KEY>',    // Server-side secret key
   timeoutMs: 30000,                          // Optional request timeout
 });`;
 
@@ -52,6 +52,64 @@ if (receipt.status === 'CONFIRMED') {
           Sponsor transaction fees for your dApp users without forcing them to acquire `tNIGHT`,
           register DUST capacity, or manage wallet gas tokens.
         </p>
+      </div>
+
+      {/* 5-Step Developer Setup Flow */}
+      <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-white">5-Step Integration Lifecycle</h3>
+          <span className="text-[10px] font-mono text-brand-400 uppercase tracking-wider">Level 4 Workflow</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs font-mono">
+          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+            <span className="text-[10px] text-brand-400 font-bold">STEP 01</span>
+            <p className="font-semibold text-white">Create API Key</p>
+            <p className="text-[11px] text-zinc-400 font-sans">Generate an API key in the console.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+            <span className="text-[10px] text-brand-400 font-bold">STEP 02</span>
+            <p className="font-semibold text-white">Save Securely</p>
+            <p className="text-[11px] text-zinc-400 font-sans">Copy secret once; never saved in browser.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+            <span className="text-[10px] text-brand-400 font-bold">STEP 03</span>
+            <p className="font-semibold text-white">Configure Backend</p>
+            <p className="text-[11px] text-zinc-400 font-sans">Set DUSTIFY_API_KEY in server environment.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+            <span className="text-[10px] text-brand-400 font-bold">STEP 04</span>
+            <p className="font-semibold text-white">Start Relayer</p>
+            <p className="text-[11px] text-zinc-400 font-sans">Run relayer inside WSL2 Ubuntu.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+            <span className="text-[10px] text-brand-400 font-bold">STEP 05</span>
+            <p className="font-semibold text-white">Send Transaction</p>
+            <p className="text-[11px] text-zinc-400 font-sans">Submit via SDK to Midnight Preview.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Security Architecture Distinction: Server-side Secret vs Public Frontend Config */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-5 rounded-2xl bg-zinc-900/50 border border-amber-500/20 space-y-2">
+          <div className="flex items-center space-x-2 text-amber-400 font-mono text-xs font-bold">
+            <Lock className="w-4 h-4" />
+            <span>SERVER-SIDE SECRET (CONFIDENTIAL)</span>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            <strong className="text-zinc-200">DUSTIFY_API_KEY</strong> &amp; <strong className="text-zinc-200">MASTER_WALLET_SEED</strong> must strictly reside in your backend server environment (.env) or secrets manager. Never bundle this secret into client-side browser JavaScript or public HTML.
+          </p>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-zinc-900/50 border border-brand-500/20 space-y-2">
+          <div className="flex items-center space-x-2 text-brand-400 font-mono text-xs font-bold">
+            <Server className="w-4 h-4" />
+            <span>PUBLIC FRONTEND CONFIGURATION</span>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Client-side dApp frontends may safely expose public endpoints such as your dApp proxy URL or <strong className="text-zinc-200">PROOF_SERVER_URL</strong>. All transaction proving runs locally in the user's browser before relay.
+          </p>
+        </div>
       </div>
 
       {/* Integration Architecture */}

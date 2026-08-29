@@ -9,10 +9,8 @@ This package contains the Compact smart contracts deployed on the **Midnight Pre
 ```
 contracts/
 ├── src/
-│   ├── DustifyRegistry.compact   # Primary sponsorship registry & dApp quota policy contract
-│   ├── Voting.compact            # Anonymous governance voting showcase
 │   └── hello-world.compact       # Public state mutation showcase
-├── artifacts/                    # Generated keys, ZKIR, and contract runtime bindings
+├── managed/                      # Generated keys, ZKIR, and contract runtime bindings
 │   └── hello-world/
 └── README.md
 ```
@@ -21,14 +19,8 @@ contracts/
 
 ## 📄 Contracts Overview
 
-### 1. `DustifyRegistry.compact`
-Maintains on-chain registry state for authorized dApps, whitelisted circuit hashes, and daily sponsorship limits on Midnight Preview.
-
-### 2. `Voting.compact`
-Demonstrates gasless decentralized governance. Voters evaluate zero-knowledge proofs locally on their device to prevent double voting via nullifiers while the DUSTify Relayer pays the on-chain settlement fee.
-
-### 3. `hello-world.compact`
-Demonstrates basic public ledger state mutation (`storeMessage`) sponsored seamlessly by the Relayer.
+### `hello-world.compact`
+Demonstrates public ledger state mutation (`storeMessage`) proved locally by the user with 0 DUST paid by the end user and sponsored seamlessly on Midnight Preview by the DUSTify Relayer.
 
 ---
 
@@ -38,7 +30,7 @@ Midnight Compact smart contracts must be compiled inside Linux/WSL:
 
 ```bash
 # Compile Compact contract
-compact compile src/DustifyRegistry.compact artifacts/DustifyRegistry
+~/.local/bin/compact compile src/hello-world.compact managed/hello-world
 ```
 
 ---

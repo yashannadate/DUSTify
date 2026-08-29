@@ -52,7 +52,7 @@ export const SponsorCapacityPage: React.FC<SponsorCapacityPageProps> = ({
         <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
           <div className="flex items-center space-x-2 text-amber-300 font-semibold text-sm">
             <AlertTriangle className="w-4 h-4 text-amber-400" />
-            <span>Sponsor Wallet Awaiting Faucet Funding</span>
+            <span>Sponsor Wallet DUST Capacity Depleted</span>
           </div>
           <p className="text-xs text-zinc-300 leading-relaxed">
             The configured sponsor master wallet currently has <strong>0 Specks</strong> of available DUST capacity.

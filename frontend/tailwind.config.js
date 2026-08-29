@@ -8,24 +8,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#09090b',
+        background: '#0a0a0a',
         surface: {
-          50: '#1c1c21',
-          100: '#141418',
-          200: '#0f0f13',
-          300: '#09090b',
+          50: '#1e1e1e',
+          100: '#141414',
+          200: '#0f0f0f',
+          300: '#0a0a0a',
         },
         border: {
-          subtle: '#27272a',
-          muted: '#3f3f46',
-          active: '#52525b',
-          brand: '#7c3aed33',
+          subtle: '#262626',
+          muted: '#383838',
+          active: '#4a4a4a',
+          brand: 'rgba(0, 30, 255, 0.3)',
         },
         brand: {
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
+          300: '#808eff',
+          400: '#334bff',
+          500: '#001EFF', // Midnight Electric Blue from reference
+          600: '#001bd6',
+          700: '#0016b0',
+          950: '#000840',
         },
         accent: {
           DEFAULT: '#fafafa',

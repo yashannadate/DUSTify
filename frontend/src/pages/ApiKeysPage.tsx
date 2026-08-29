@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { KeyRound, Plus, Copy, Check, ShieldCheck, X, AlertTriangle } from 'lucide-react';
+import { KeyRound, Plus, Copy, Check, ShieldCheck, X, AlertTriangle, Info } from 'lucide-react';
 import { ApiKeyRecord } from '../types';
+
+function generateSecureApiKey(): string {
+  const bytes = new Uint8Array(16);
+  window.crypto.getRandomValues(bytes);
+  const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+  return `dustify_${hex}`;
+}
 
 export const ApiKeysPage: React.FC = () => {
   const [keys, setKeys] = useState<ApiKeyRecord[]>([]);
@@ -16,9 +23,9 @@ export const ApiKeysPage: React.FC = () => {
     } else {
       const defaultKeys: ApiKeyRecord[] = [
         {
-          id: 'key_dev_default',
-          name: 'Development Default Key',
-          prefix: 'dustify_dev_key_preview...',
+          id: 'key_preview_default',
+          name: 'Primary Relayer Secret',
+          prefix: 'dustify_dev_key_...',
           createdAt: Date.now() - 604800000,
           lastUsed: 'Just now',
           status: 'Active',
@@ -26,7 +33,7 @@ export const ApiKeysPage: React.FC = () => {
         {
           id: 'key_demo_app',
           name: 'Demo Counter Application',
-          prefix: 'dustify_app_preview...',
+          prefix: 'dustify_demo_app_...',
           createdAt: Date.now() - 259200000,
           lastUsed: '5 minutes ago',
           status: 'Active',
@@ -41,9 +48,12 @@ export const ApiKeysPage: React.FC = () => {
     e.preventDefault();
     if (!keyName.trim()) return;
 
-    const rawSecret = `dustify_${Math.random().toString(36).substring(2, 10)}_${Date.now().toString(36)}`;
+    // Cryptographically secure key generation
+    const rawSecret = generateSecureApiKey();
+    
+    // Store only non-sensitive metadata and masked prefix — never store full plaintext secret
     const newRecord: ApiKeyRecord = {
-      id: `key_${Math.random().toString(36).substring(2, 9)}`,
+      id: `key_${Date.now().toString(36)}`,
       name: keyName.trim(),
       prefix: `${rawSecret.substring(0, 16)}...`,
       createdAt: Date.now(),
@@ -66,7 +76,7 @@ export const ApiKeysPage: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setKeyName('');
-    setNewlyCreatedKey(null);
+    setNewlyCreatedKey(null); // Wipe secret from memory
   };
 
   return (
@@ -74,9 +84,9 @@ export const ApiKeysPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-800/80">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">API Keys</h2>
+          <h2 className="text-xl font-bold text-white tracking-tight">API Keys & Authentication</h2>
           <p className="text-xs text-zinc-400 mt-1">
-            API keys authenticate your application with the DUSTify relayer gateway.
+            Manage authentication credentials for the DUSTify Relayer gateway.
           </p>
         </div>
         <button
@@ -84,16 +94,18 @@ export const ApiKeysPage: React.FC = () => {
           className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-colors shadow-md"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Create API Key</span>
+          <span>Create New Key</span>
         </button>
       </div>
 
-      {/* Security Note */}
-      <div className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 flex items-start space-x-3 text-xs text-zinc-400">
-        <ShieldCheck className="w-4 h-4 text-brand-400 mt-0.5" />
-        <p className="leading-relaxed">
-          API keys are used in the <code className="text-brand-300">x-api-key</code> header when submitting transactions
-          to <code className="text-zinc-200">POST /api/v1/relay</code>. Keep your keys secret in server environments.
+      {/* Architecture Scope Notice */}
+      <div className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 space-y-2 text-xs">
+        <div className="flex items-center space-x-2 text-brand-400 font-semibold">
+          <Info className="w-4 h-4 flex-shrink-0" />
+          <span>Level 4 MVP Architecture Scope</span>
+        </div>
+        <p className="text-zinc-400 leading-relaxed pl-6">
+          The DUSTify Level 4 relayer authenticates requests via the <code className="text-brand-300">x-api-key</code> header validated against the server-side <code className="text-zinc-200">DUSTIFY_API_KEY</code> environment secret. The dashboard provides cryptographic key generation and prefix tracking. Multi-tenant database key isolation and self-service key rotation are scheduled for the Level 5 production roadmap.
         </p>
       </div>
 
@@ -174,11 +186,16 @@ export const ApiKeysPage: React.FC = () => {
               </form>
             ) : (
               <div className="space-y-4 text-xs">
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start space-x-2 text-amber-300">
-                  <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <p className="text-[11px] leading-relaxed">
-                    Copy and store this secret key now. You will not be able to see it again.
-                  </p>
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start space-x-2.5 text-amber-300">
+                  <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-400" />
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-semibold text-amber-200">
+                      Secret Key Generated — Store Securely
+                    </p>
+                    <p className="text-[10px] leading-relaxed text-amber-300/80">
+                      This secret key is shown only once. It is not saved in plaintext and cannot be recovered after leaving this screen. Store it in your backend environment variables.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-xs text-brand-300 break-all flex items-center justify-between">

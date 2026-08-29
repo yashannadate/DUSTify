@@ -1,262 +1,127 @@
-# 🌙 DUSTify — Zero-Friction DUST Relayer & Fee-Abstraction Infrastructure
+# 🌙 DUSTify
+### Zero-Friction DUST Sponsorship & Fee-Abstraction Infrastructure for Midnight
 
-> **Zero-friction DUST sponsorship and transaction relaying infrastructure for the Midnight Network.**
+DUSTify enables Midnight dApps to sponsor transaction fees for users. Users generate transaction proofs locally while a sponsor relayer supplies DUST and submits the finalized transaction to Midnight Preview.
 
-[![Midnight Network](https://img.shields.io/badge/Midnight-Network-7928ca?logo=midnight&logoColor=white)](https://midnight.network)
-[![Smart Contracts](https://img.shields.io/badge/Smart_Contracts-Compact_0.22-orange)](https://docs.midnight.network)
-[![Network](https://img.shields.io/badge/Network_ID-preview-blue)](https://indexer.preview.midnight.network)
-
----
-
-### 🌐 [Live Demo (Local / Preview Scaffolding)](http://localhost:5173) • 🎬 [Demo Video](#-demo-video) • 🐦 [Product X Profile](docs/x-profile.md) • 📁 [GitHub Repository](https://github.com/yashannadate/DUSTify)
+[![Midnight Network](https://img.shields.io/badge/Midnight-Network-001EFF?logo=midnight&logoColor=white)](https://midnight.network)
+[![Smart Contracts](https://img.shields.io/badge/Smart_Contracts-Compact_0.30-001EFF)](https://docs.midnight.network)
+[![Network](https://img.shields.io/badge/Network_ID-preview-001EFF)](https://indexer.preview.midnight.network)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-passing-brightgreen?logo=github-actions&logoColor=white)](https://github.com/yashannadate/DUSTify/actions)
 
 ---
 
-## 📖 Executive Summary
+### 🌐 [Live App (https://dustify-midnight.vercel.app)](https://dustify-midnight.vercel.app) • 💻 [Local Dev Demo (http://localhost:5173)](http://localhost:5173) • 🎥 [Demo Video](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6) • 🐦 [Product X Profile (@dustifymidnight)](https://x.com/dustifymidnight) • 📁 [GitHub Repository](https://github.com/yashannadate/DUSTify)
 
-**DUSTify** is a transaction sponsorship and fee-abstraction infrastructure layer engineered specifically for the **Midnight Network**. It solves the critical onboarding bottleneck in privacy-preserving Web3 applications: the requirement that every end-user must acquire native gas tokens (`DUST`), navigate external faucets, and wait for token generation cycles before submitting their first transaction.
+---
 
-With DUSTify, dApp users generate Zero-Knowledge (ZK) proofs locally on their device at **0 DUST cost**, preserving 100% client witness privacy in accordance with Midnight's **Kachina Protocol**. The resulting un-gas-backed `UnboundTransaction` is routed via a lightweight client SDK to an authenticated Master Relayer, which balances the transaction using sponsor-owned DUST capacity and settles it on the **Midnight Preview Network** in a single atomic flow.
+<p align="center">
+  <img src="docs/assets/hero-landing.png" alt="DUSTify Hero - Zero-Friction DUST Sponsorship for Midnight" width="100%" />
+</p>
 
 ---
 
 ## 📑 Table of Contents
 
-1. [🌐 Live Demo](#-live-demo)
-2. [📋 Contract / Demo Address](#-contract--demo-address)
-3. [🌔 Level 4 Requirements & Submission Checklist](#-level-4-requirements--submission-checklist)
-4. [💡 What is DUSTify?](#-what-is-dustify)
-5. [🚨 The Problem](#-the-problem)
-6. [⚡ The DUSTify Solution](#-the-dustify-solution)
-7. [🏗️ Architecture](#-architecture)
-8. [🔄 Step-by-Step Transaction Lifecycle](#-step-by-step-transaction-lifecycle)
-9. [🔐 Security & Trust Model](#-security--trust-model)
-10. [🟢 Current Verification Status](#-current-verification-status)
-11. [✨ Features](#-features)
-12. [🛠️ Tech Stack & Verified Dependencies](#-tech-stack--verified-dependencies)
-13. [🌐 Midnight Preview Network Configuration](#-midnight-preview-network-configuration)
-14. [📋 Prerequisites](#-prerequisites)
-15. [🚀 Run Locally (WSL2 Ubuntu)](#-run-locally-wsl2-ubuntu)
-16. [🔌 Client SDK Usage Guide](#-client-sdk-usage-guide)
-17. [🔗 Relayer API Specification](#-relayer-api-specification)
-18. [💾 Wallet State Persistence & Fast Sync](#-wallet-state-persistence--fast-sync)
-19. [🎬 Demo Video](#-demo-video)
-20. [📁 Project Structure](#-project-structure)
-21. [📊 Roadmap (Moonshot Phases)](#-roadmap-moonshot-phases)
-22. [⚠️ Current Limitations & Technical Honesty](#-current-limitations--technical-honesty)
-23. [📄 Level 4 Reviewer Evidence Matrix](#-level-4-reviewer-evidence-matrix)
-24. [🙏 Acknowledgments](#-acknowledgments)
+1. [📖 What is DUSTify?](#-what-is-dustify)
+2. [🎥 Demo Video](#-demo-video)
+3. [⚡ Reviewer Quick Start](#-reviewer-quick-start)
+4. [🏗️ Architecture](#-architecture)
+5. [🔄 How Sponsorship Works](#-how-sponsorship-works)
+6. [🎯 Level 4 Scope & Boundaries](#-level-4-scope--boundaries)
+7. [🔌 API Usage & Client SDK Guide](#-api-usage--client-sdk-guide)
+8. [🔐 Security & Trust Model](#-security--trust-model)
+9. [🌐 Preview Deployment Details](#-preview-deployment-details)
+10. [🧪 Testing & Verification](#-testing--verification)
+11. [⚠️ Current Limitations & Technical Honesty](#-current-limitations--technical-honesty)
+12. [📊 Roadmap (Moonshot Phases)](#-roadmap-moonshot-phases)
+13. [📄 Level 4 Reviewer Evidence Matrix](#-level-4-reviewer-evidence-matrix)
+14. [📜 License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
-## 🌐 Live Demo
+## 📖 What is DUSTify?
 
-| Property | Value / Status | Notes |
-| :--- | :--- | :--- |
-| **Frontend Application** | `http://localhost:5173` *(Local Vite)* | Production bundle built (`dist/`) |
-| **Relayer API Gateway** | `http://localhost:3001` | Public REST API & Status Telemetry |
-| **Target Network** | **Midnight Preview** | Node RPC: `wss://rpc.preview.midnight.network` |
-| **Indexer Endpoint** | `https://indexer.preview.midnight.network/api/v4/graphql` | Official Midnight Preview GraphQL Indexer |
-| **Sponsor Master Address** | `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd` | Funded with 5,000 tNIGHT; Active DUST Capacity Generator |
-| **Sponsor DUST Capacity** | `325,254,460,000 DUST` *(ACTIVE & GENERATING)* | Live DUST Capacity on Midnight Preview |
-| **Verified Sponsored Tx** | `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` | Real on-chain sponsored transaction executed on Midnight Preview |
-| **DUST Registration Tx** | `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` | Real on-chain NIGHT UTXO registration for continuous DUST generation |
+**DUSTify** is a transaction fee-abstraction and meta-transaction relayer engineered for the **Midnight Network**. It solves the critical onboarding bottleneck in privacy-preserving Web3 applications: the requirement that every end-user must acquire native gas tokens (`DUST`), navigate external faucets, and wait for token generation cycles before submitting their first transaction.
 
-> 🚧 **Deployment Note:** Cloud deployment of the static frontend is currently being configured. In accordance with Midnight runtime requirements, the Master Relayer backend executes inside Linux/WSL2 Ubuntu.
+In Midnight's dual-token resource model:
+- **NIGHT** is the unshielded capital asset. Holding NIGHT tokens continuously generates DUST.
+- **DUST** is the shielded, non-transferable resource used exclusively to pay for transaction fees and smart contract execution.
+
+Because DUST cannot be directly transferred between arbitrary user wallets, onboarding new users traditionally requires them to acquire `tNIGHT`, register unshielded UTXOs for DUST generation, and wait for generation cycles before performing any on-chain action.
+
+DUSTify decouples **application zero-knowledge proof generation** from **transaction fee payment and blockchain submission**. A user generates ZK proofs locally on their device with 0 DUST required from them. The un-gas-backed `UnboundTransaction` is routed via `@dustify/sdk` to an authenticated Master Relayer, which balances the transaction using sponsor-owned DUST capacity and settles it on the **Midnight Preview Network** in a single atomic flow.
 
 ---
 
-## 📋 Contract / Demo Address
+## 🎥 Demo Video
 
-DUSTify demonstrates gasless transaction sponsorship using two primary contracts:
+> 🎬 **Demo Video & Walkthrough Folder:**  
+> **[Demo Video](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6)**  
+> Link: `https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6`
 
-| Contract | Network | Contract Address / Artifact | Functionality Demonstrated |
-| :--- | :--- | :--- | :--- |
-| **`hello-world.compact`** | Midnight Preview | Managed Artifact: [`contracts/managed/hello-world`](contracts/managed/hello-world) | Public ledger state mutation (`storeMessage`) via local ZK witness |
-| **`Voting.compact`** | Midnight Preview | Source: [`contracts/Voting.compact`](contracts/Voting.compact) | Anonymous gasless governance ballot submission (`castVote`) |
-| **On-Chain Deployment** | Midnight Preview | `TBD — deployed contract address will appear here once broadcast` | Verification via Preview Indexer |
-
----
-
-## 🌔 Level 4 Requirements & Submission Checklist
-
-### 📋 Requirements to Pass (Level 4: Waxing Gibbous)
-
-| Requirement | Real Status | Current Evidence & Implementation Detail |
-| :--- | :---: | :--- |
-| **Working MVP on Preview** | 🟢 **PASSED** | Full end-to-end codebase operational: Frontend UI, Client SDK, and Relayer API. Verified live on Midnight Preview with address `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd`, active DUST capacity (`325,254,460,000 DUST`), and confirmed on-chain sponsored transaction (`003986f9...`). |
-| **Comprehensive Documentation** | 🟢 **PASSED** | Complete submission-ready README with architecture diagrams, security models, local setup instructions, API specs, and limitation disclosures. |
-| **CI/CD Build Workflow** | 🟢 **PASSED** | GitHub Actions pipeline defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) validating SDK compilation, Frontend bundling, and Relayer type safety. |
-| **Product X (Twitter) Profile** | 🟢 **PASSED** | Complete profile metadata, bio, visual asset specifications, and 5-tweet launch thread documented in [`docs/x-profile.md`](docs/x-profile.md). |
-| **Minimum 15 Commits** | 🟢 **PASSED** | **24 meaningful, atomic commits** structured chronologically in Git history covering every phase from initialization to real on-chain execution. |
-
-### 📤 Submission Checklist
-
-- [x] **Public GitHub Repository:** [https://github.com/yashannadate/DUSTify](https://github.com/yashannadate/DUSTify)
-- [x] **Monorepo Architecture:** Clean directory separation (`client-sdk`, `relayer-api`, `frontend`, `contracts`, `experiments`, `docs`)
-- [x] **Verified Transaction Pipeline:** `balanceUnboundTransaction` → `finalizeRecipe` → `submitTransaction` implemented & verified on Preview
-- [x] **Persistent State Engine:** Checkpoint serialization in `.data/new-sponsor-state/preview` (~1.40s warm sync)
-- [x] **Client SDK Library:** `@dustify/sdk` with native binary WASM payload serialization
-- [x] **Interactive Frontend:** React + Vite + Tailwind CSS dashboard with live telemetry and visual pipeline simulator
-- [x] **CI/CD Workflow:** Automated build checks across all subpackages in `.github/workflows/ci.yml`
-- [x] **Product X Strategy:** Launch thread and branding assets in [`docs/x-profile.md`](docs/x-profile.md)
-- [x] **Real Faucet DUST Allocation:** 5,000 tNIGHT UTXO registered on-chain for continuous DUST capacity generation (TxId: `0050c425...`)
-- [x] **Real Midnight Preview E2E Transaction:** Successfully submitted and confirmed on-chain (TxId: `003986f9...`)
-- [ ] **Live Video Recording:** Walkthrough recording demonstrating the gasless transaction flow on Midnight Preview *(Ready to record / submit)*
+### What the Demonstration Shows:
+1. **Zero-Gas User Entry:** Opening the DUSTify frontend with 0 DUST in user wallet (0 DUST paid by the end user).
+2. **Preview Network Connectivity:** Real-time pulse indicator confirming Midnight Preview connection (`wss://rpc.preview.midnight.network`).
+3. **Relayer Telemetry Check:** Live inspection of Relayer health, applied block index, and Master Sponsor address.
+4. **Local Witness Proving:** State mutation in `hello-world.compact` evaluated locally on client (private witness remains in client memory).
+5. **WASM Binary Handoff:** Client SDK serializing `UnboundTransaction` and transmitting over authenticated HTTP.
+6. **Sponsor Fee Attachment:** Backend Relayer executing `balanceUnboundTransaction()` with Master Sponsor Wallet.
+7. **Recipe Sealing:** `finalizeRecipe()` converting recipe to `FinalizedTransaction`.
+8. **Node RPC Broadcast:** Transaction broadcast to `wss://rpc.preview.midnight.network`.
+9. **On-Chain Confirmation:** Real-time display of confirmed Transaction ID (TxID).
+10. **Explorer Verification:** Viewing the public state mutation on the Midnight Preview Indexer.
 
 ---
 
-## 💡 What is DUSTify?
+## ⚡ Reviewer Quick Start
 
-DUSTify decouples **application zero-knowledge proof generation** from **transaction fee payment and blockchain submission**.
+To verify and run DUSTify locally against the live Midnight Preview Network:
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                             WHAT THE USER DOES                           │
-│  1. Performs action in dApp (e.g. Vote, Message, Swap)                   │
-│  2. Prover evaluates Compact circuit locally with private witness        │
-│  3. Produces an UnboundTransaction (0 DUST spent, witness 100% private)  │
-│  4. Client SDK serializes payload to binary and dispatches to Relayer    │
-└────────────────────────────────────┬─────────────────────────────────────┘
-                                     │
-                        HTTP Relay (x-api-key protected)
-                                     │
-┌────────────────────────────────────▼─────────────────────────────────────┐
-│                           WHAT THE RELAYER DOES                          │
-│  1. Receives and validates serialized UnboundTransaction binary payload  │
-│  2. Restores warm wallet checkpoint and verifies sponsor DUST capacity   │
-│  3. Calls wallet.balanceUnboundTransaction() with Master Wallet keys     │
-│  4. Seals the recipe via wallet.finalizeRecipe()                         │
-│  5. Broadcasts FinalizedTransaction to Midnight Preview Node RPC         │
-│  6. Returns confirmed on-chain Transaction ID (txId) to client           │
-└──────────────────────────────────────────────────────────────────────────┘
-```
-
-### Key Architectural Benefit
-dApp developers can onboard mainstream users instantly. A user clicking "Vote" or "Submit" interacts with zero crypto-wallet prompts, zero token faucets, and zero network configuration hurdles.
-
-> [!IMPORTANT]
-> **Scope Boundary Clarification:**
-> DUSTify does **NOT** claim to eliminate client-side identity or witness generation. Under Midnight's **Kachina Protocol**, witness generation MUST remain on the client machine to preserve privacy. DUSTify strictly abstracts gas fee synchronization and transaction settlement.
-
----
-
-## 🚨 The Problem
-
-Traditional onboarding on Midnight requires navigating multiple cryptographic and economic layers:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                      TRADITIONAL USER JOURNEY (HIGH FRICTION)               │
-└─────────────────────────────────────────────────────────────────────────────┘
-  Install Midnight Extension Wallet
-                 ↓
-  Switch to Midnight Preview Network
-                 ↓
-  Locate external Testnet Faucet
-                 ↓
-  Request tNIGHT tokens & wait for block inclusion
-                 ↓
-  Register unshielded UTXOs for DUST generation
-                 ↓
-  Wait for DUST capacity generation ticks (10+ minutes)
-                 ↓
-  Synchronize local wallet state indexer stream
-                 ↓
-  Interact with dApp & sign gas fee deduction
-                 ↓
-  Transaction submitted on-chain (Total onboarding time: 15-30 mins)
-```
-
-### Why this breaks user adoption:
-- **Consumer & Social dApps:** Mainstream users abandon onboarding if asked to fund a gas wallet before trying a product.
-- **Anonymous Governance:** Voters in a DAO should not need to expose their main funded wallet just to cast an anonymous zero-knowledge ballot.
-- **Enterprise Pilots:** Corporate users cannot easily navigate testnet faucets or manage gas token reserves.
-- **Hackathon Demos & Hackers:** Developers want instant testing without managing multi-wallet faucet allocations.
-
----
-
-## ⚡ The DUSTify Solution
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         DUSTIFY USER JOURNEY (ZERO FRICTION)                │
-└─────────────────────────────────────────────────────────────────────────────┘
-  Open dApp in browser
-         ↓
-  Click "Submit Vote / Action"
-         ↓
-  Local Prover generates ZK proof in-browser (0 DUST required)
-         ↓
-  @dustify/sdk serializes UnboundTransaction to native WASM binary
-         ↓
-  DUSTify Relayer API attaches DUST fee inputs via balanceUnboundTransaction()
-         ↓
-  FinalizedTransaction broadcasts to Midnight Preview RPC
-         ↓
-  Confirmed on Midnight Ledger! (Total user onboarding time: < 3 seconds)
-```
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/yashannadate/DUSTify.git
+   cd DUSTify
+   ```
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Pre-configured with Midnight Preview endpoints; .env is gitignored
+   ```
+3. **Start local Proof Server (Docker):**
+   ```bash
+   docker run -d --name midnight-proof-server -p 6300:6300 midnightnetwork/proof-server:latest
+   ```
+4. **Start DUSTify Master Relayer (WSL2 Ubuntu):**
+   ```bash
+   npm run dev:relayer
+   # Starts Express gateway on http://localhost:3001 and restores warm wallet state (~1.40s)
+   ```
+5. **Start Frontend Dashboard:**
+   ```bash
+   npm run dev:frontend
+   # Launches Vite development server on http://localhost:5173
+   ```
+6. **Open Dashboard:** Navigate to `http://localhost:5173` in your browser.
+7. **Check Relayer Health:** Verify live sync and DUST capacity on the **Relayer Health** tab or `GET /api/v1/status`.
+8. **Execute Demo Transaction:** Open the **Playground** tab to trigger a sponsored state mutation on `hello-world.compact`.
+9. **Verify On-Chain:** Inspect the resulting transaction hash via Midnight Preview GraphQL Indexer.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        FRONTEND / CLIENT APPLICATION                   │
-│  React 18 + Vite + Tailwind CSS + Lucide Icons                         │
-│  • Interactive Governance Demo (Voting.compact)                        │
-│  • Live Preview Telemetry & Endpoint Health Monitor                    │
-│  • Developer Playground & Code Snippet Exchanger                       │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    │ Evaluates Compact Circuit locally
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                          LOCAL PROOF PROVIDER                          │
-│  @midnight-ntwrk/midnight-js-http-client-proof-provider                │
-│  • Executes private witness evaluation locally (Kachina Protocol)      │
-│  • Generates cryptographically sealed UnboundTransaction               │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    │ Native Binary Serialization (.serialize())
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                          DUSTIFY CLIENT SDK                            │
-│  @dustify/sdk (TypeScript)                                             │
-│  • DustifyClient.sponsorAndSubmit(unboundTx, options)                  │
-│  • Binary-safe Hex / Uint8Array encoding & error dispatch              │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    │ POST /api/v1/relay (x-api-key authenticated)
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                         DUSTIFY RELAYER GATEWAY                        │
-│  relayer-api (Node.js + Express + TypeScript)                          │
-│  • In-memory sliding window rate limiter (100 req/min)                 │
-│  • CORS & domain origin verification                                   │
-│  • Payload validation & Transaction.deserialize()                      │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    │ Attaches Master DUST Wallet inputs
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                       MASTER SPONSOR WALLET ENGINE                     │
-│  @midnight-ntwrk/wallet-sdk (WalletFacade + DustWallet)                │
-│  • State Persistence: .data/wallet-state/preview (~1.40s warm sync)    │
-│  • wallet.balanceUnboundTransaction(unboundTx, { shielded, dust }, ttl)│
-│  • wallet.finalizeRecipe(recipe)                                       │
-│  • wallet.submitTransaction(finalizedTx)                               │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    │ Submits sealed transaction over WebSocket
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        MIDNIGHT PREVIEW NETWORK                        │
-│  • Indexer GraphQL: https://api-preview.1am.xyz/api/v4/graphql         │
-│  • Node RPC: wss://rpc.preview.midnight.network                        │
-│  • On-Chain Settlement & State Transition                              │
-└────────────────────────────────────────────────────────────────────────┘
+User / dApp
+    ↓
+Client-side Compact execution + ZK proof (Private witness remains in local memory)
+    ↓
+Serialized transaction payload (UnboundTransaction binary hex)
+    ↓
+DUSTify Relayer (POST /api/v1/relay, x-api-key authenticated)
+    ↓
+Sponsor DUST (Master Sponsor Wallet balances fee with balanceUnboundTransaction)
+    ↓
+Midnight Preview (FinalizedTransaction broadcast via wss://rpc.preview.midnight.network)
 ```
 
 ### Component Responsibilities
@@ -264,234 +129,103 @@ Traditional onboarding on Midnight requires navigating multiple cryptographic an
 | Component | Primary Responsibility | Gas Cost | Privacy Boundary |
 | :--- | :--- | :---: | :--- |
 | **Frontend dApp** | User interface & action trigger | 0 DUST | User machine |
-| **Proof Provider** | Evaluates circuit with private witness | 0 DUST | User machine (Private witness never leaves) |
+| **Proof Provider** | Evaluates circuit with private witness | 0 DUST | User machine (Private witness generated locally) |
 | **Client SDK** | Serializes `UnboundTransaction` into binary | 0 DUST | User machine |
 | **Relayer API** | Validates payload, authenticates dApp API key | 0 DUST | Gateway layer |
-| **Sponsor Wallet** | Attaches DUST inputs via `balanceUnboundTransaction` | Sponsored | Master Wallet (Sponsor pays DUST) |
+| **Master Sponsor Wallet** | Backend-controlled wallet whose DUST capacity pays fees | Sponsored | Master Wallet (Sponsor pays DUST) |
 | **Midnight Network** | Validates ZK proof and updates public ledger | Settlement | Public ledger |
+
+> [!IMPORTANT]
+> **Privacy Guarantee & Secret Isolation:**  
+> DUSTify does **NOT** receive the user's secret keys. Private witness generation remains entirely on the client side; DUSTify receives only the resulting serialized transaction payload (`UnboundTransaction`). User secret keys remain client-side, sponsor credentials remain server-side, and DUSTify does not replace Midnight's client-side proving requirements.
 
 ---
 
-## 🔄 Step-by-Step Transaction Lifecycle
+## 🔄 How Sponsorship Works
+
+<p align="center">
+  <img src="docs/assets/how-dustify-works.png" alt="HOW DUSTify WORKS - Pipeline & Architecture" width="100%" />
+</p>
+
+### Detailed Step-by-Step Transaction Lifecycle
 
 ```
 [dApp Action] ──► [Local Circuit Execution] ──► [UnboundTransaction]
                                                        │
                                                        ▼ (Native Binary Serialization)
-[HTTP 200: Confirmed] ◄── [Node RPC Broadcast] ◄── [Finalize Recipe] ◄── [Balance Unbound Tx]
+[HTTP 200: Submitted] ◄── [Node RPC Broadcast] ◄── [Finalize Recipe] ◄── [Balance Unbound Tx]
 ```
 
-### Why Native Binary Serialization is Critical
-In the Midnight SDK, `UnboundTransaction` objects encapsulate WebAssembly (WASM) instances with non-enumerable native pointers.
-
-- ❌ `JSON.stringify(unboundTx)` produces an empty `{}` or corrupts private proof structures.
-- ✅ `@dustify/sdk` uses `unboundTx.serialize()` returning `Uint8Array`, which is encoded as a raw binary hex payload.
-- ✅ The Relayer deserializes the exact object via `Transaction.deserialize('signature', 'proof', 'binding', bytes)`.
+1. **Local Witness Proving:** The user interacts with the dApp. The local Compact prover evaluates the contract circuit with private witness inputs on the client device. This produces an `UnboundTransaction` containing ZK proofs and intended public/shielded state mutations, with zero gas attached.
+2. **Native WASM Binary Serialization:** In the Midnight SDK, `UnboundTransaction` objects encapsulate WebAssembly (WASM) instances with non-enumerable native pointers. Standard `JSON.stringify(unboundTx)` would produce `{}` or corrupt proof bytes. `@dustify/sdk` invokes `unboundTx.serialize()` returning raw binary bytes (`Uint8Array`), encoded safely as a hexadecimal payload.
+3. **Authenticated Relay Handoff:** The client SDK dispatches the payload to the Relayer API via `POST /api/v1/relay` with an `x-api-key` header.
+4. **Master Sponsor Fee Attachment:** The Relayer deserializes the exact transaction via `Transaction.deserialize('signature', 'proof', 'binding', bytes)` and invokes `wallet.balanceUnboundTransaction(unboundTx, { shielded, dust }, ttl)`. This attaches the sponsor's DUST coins to pay for transaction fees.
+5. **Recipe Finalization:** The Relayer seals the balanced recipe using `wallet.finalizeRecipe(recipe)`, yielding a cryptographically complete `FinalizedTransaction`.
+6. **Network Broadcast & SUBMITTED Receipt:** The transaction is broadcast directly to `wss://rpc.preview.midnight.network` via `wallet.submitTransaction(finalizedTx)`. The relayer returns HTTP 200 with status `SUBMITTED` and the confirmed transaction ID (`txId`).
 
 ---
 
-## 🔐 Security & Trust Model
+## 🎯 Level 4 Scope & Boundaries
 
-| Domain | Client Machine | DUSTify Relayer |
-| :--- | :---: | :---: |
-| **User Secret Keys** | Stays 100% on client | **Never transmitted or requested** |
-| **Private Witness** | Evaluated in local memory | **Zero access** (Kachina Protocol guarantee) |
-| **ZK Proof Integrity** | Generated locally | **Immutable** (Any tampering invalidates ZK proof) |
-| **Sponsor Wallet Keys** | Inaccessible to client | Stored securely in backend environment variables |
-| **DUST Token Balance** | 0 DUST required from user | Deducted from Master Relayer wallet |
-| **Transaction Submission** | Delegated | Managed and broadcast by Relayer |
+DUSTify is submitted under **Level 4: Waxing Gibbous** of the Midnight Moonshots program.
 
-### Threat & Abuse Controls
-1. **API Key Guarding:** Relayer endpoints enforce `x-api-key` validation to restrict access to registered dApps.
-2. **CORS Restrictions:** Relayer verifies request origin against `ALLOWED_ORIGINS`.
-3. **In-Memory Rate Limiting:** Sliding-window rate limiter restricts requests per IP (default: 100 req/min).
-4. **Payload Size Limits:** `express.json({ limit: '15mb' })` with minimum length sanity checks.
-5. **Time-To-Live (TTL):** Every balanced transaction recipe includes a strict 3-minute expiration deadline (`ttl: new Date(Date.now() + 180_000)`).
+### ✅ What IS Included in the Level 4 MVP:
+- **Midnight Preview Network Integration:** Direct connectivity with Preview Node RPC (`wss://rpc.preview.midnight.network`) and GraphQL Indexer (`https://indexer.preview.midnight.network/api/v4/graphql`).
+- **Master Sponsor Wallet Engine:** Derives required HD roles (Zswap, NightExternal, Dust) and maintains live DUST capacity.
+- **Client-Side Proving Decoupling:** Users execute Compact circuits locally; zero user private keys are transmitted.
+- **Serialized `UnboundTransaction` Relay:** Native WASM binary serialization via `@dustify/sdk` over authenticated HTTP.
+- **Atomic Fee Balancing & Signing:** Master Sponsor Wallet balances the user's transaction using `wallet.balanceUnboundTransaction()`.
+- **Transaction Finalization & Submission:** `wallet.finalizeRecipe()` and `wallet.submitTransaction()` broadcasting directly to node RPC.
+- **Persistent State Cache:** Fast warm restore in **~1.40s** (observed benchmark) avoiding full indexer replay.
+- **Relayer Authentication & Abuse Controls:** `x-api-key` header verification, IP sliding-window rate limiting, and origin protection.
+- **Single Level 4 Demo Contract:** Real deployment of [`hello-world.compact`](contracts/src/hello-world.compact) on Midnight Preview.
+- **Interactive React Dashboard:** Real-time telemetry, transaction history, capacity monitor, and developer playground.
 
----
-
-## 🟢 Current Verification Status
-
-| Component / Layer | Status | Empirical Verification Evidence |
-| :--- | :---: | :--- |
-| **Preview HTTP Indexer** | 🟢 **VERIFIED** | Active block height queries against `api-preview.1am.xyz` / `indexer.preview.midnight.network` |
-| **Preview WebSocket Stream** | 🟢 **VERIFIED** | Successful `graphql-ws` protocol handshake and live block subscription |
-| **Preview Node RPC** | 🟢 **VERIFIED** | WebSocket TLS connection established with `wss://rpc.preview.midnight.network` |
-| **Proof Server Integration** | 🟢 **VERIFIED** | HTTP health response on port `6300` |
-| **Wallet Initialization** | 🟢 **VERIFIED** | `WalletFacade.init()` with HD role derivation (Zswap, NightExternal, Dust) |
-| **Wallet Lifecycle** | 🟢 **VERIFIED** | `wallet.start(shieldedSecretKeys, dustSecretKey)` successfully activates state listeners |
-| **Wallet Synchronization** | 🟢 **VERIFIED** | `wallet.waitForSyncedState()` resolves with active indexer sync |
-| **Persistent Wallet State** | 🟢 **VERIFIED** | State serialized to `.data/wallet-state/preview/{dust,shielded,unshielded}.json` |
-| **Warm Sync Acceleration** | 🟢 **VERIFIED** | Empirically measured warm state restore in **~1.40 seconds** |
-| **Sponsor DUST Availability** | 🟡 **AWAITING FUNDING** | Master wallet derived (`mn_addr_preview1...`); currently holds `0 Specks` awaiting faucet allocation |
-| **Relayer Status Endpoint** | 🟢 **VERIFIED** | `GET /api/v1/status` returns full health, endpoints, and DUST status |
-| **Client SDK Serialization** | 🟢 **VERIFIED** | Cross-environment hex/binary conversion tested in `experiments/preview-validation/test-sdk-client.ts` |
-| **React MVP Frontend** | 🟢 **VERIFIED** | Bundled cleanly with Vite (`dist/` generated in 35s, 0 TypeScript errors) |
-| **Real Cross-Process Relay** | 🟡 **READY FOR DUST** | Verified pipeline handles `RELAYER_NOT_FUNDED` diagnostics cleanly |
+### 🔮 What IS NOT Included in Level 4 (Future Roadmap):
+- **Production Mainnet Deployment:** System is configured and validated exclusively on Midnight Preview.
+- **Decentralized Relayer Network (DRN):** Current implementation uses a single authoritative Master Relayer instance.
+- **Multi-Tenant Billing & Metering:** Level 4 uses a single server-side `DUSTIFY_API_KEY` secret. Multi-tenant database key isolation and per-dApp billing quotas are part of the Level 5 roadmap.
+- **Audited Production Security:** Not yet audited by third-party cryptographic security firms.
+- **Cross-Chain Gas Payments:** Future phase will allow users to pay sponsorship fees in ADA/stablecoins.
 
 ---
 
-## ✨ Features
-
-- ⚡ **DUST Fee Abstraction:** Eliminates user-facing gas costs for sponsored dApp interactions.
-- 🔐 **100% Client Privacy:** Witness execution remains strictly inside the user's browser.
-- 🔁 **Native Binary Relaying:** WASM-safe serialization of `UnboundTransaction` payloads.
-- 💾 **State Persistence Engine:** Atomic checkpointing to disk for instant relayer recovery.
-- 🚀 **~1.4s Warm Sync:** Avoids replaying historical blockchain streams on every server restart.
-- 🛡️ **Built-in Security Middleware:** API key authentication, CORS origin filtering, and IP rate limiting.
-- 📊 **Real-Time Telemetry Endpoint:** Public `GET /api/v1/status` exposing sync lag, DUST availability, and network health.
-- 🧩 **Developer-Friendly SDK:** `@dustify/sdk` integrates gasless submission in 3 lines of TypeScript.
-- 🖥️ **Interactive Demo Dashboard:** Visual pipeline simulator with live contract execution for governance and state storage.
-- 🌐 **Zero Hardcoding:** All RPC, Indexer, Prover, and Network settings configurable via environment variables.
-
----
-
-## 🛠️ Tech Stack & Verified Dependencies
-
-### Monorepo Stack
-
-| Layer | Technology | Purpose / Role |
-| :--- | :--- | :--- |
-| **Smart Contracts** | **Compact (0.22+)** | Privacy-preserving contracts ([`hello-world.compact`](contracts/hello-world.compact), [`Voting.compact`](contracts/Voting.compact)) |
-| **Client SDK** | **TypeScript 5.4+** | `@dustify/sdk` client library for dApp builders |
-| **Frontend UI** | **React 18 + Vite 5 + Tailwind CSS** | Developer dashboard, live telemetry, and execution simulator |
-| **Backend Relayer** | **Node.js (ESM) + Express** | Master DUST Wallet sponsor server & transaction broadcaster |
-| **Runtime Environment** | **WSL2 Ubuntu 24.04 LTS** | Required Linux environment for Midnight native WASM bindings |
-| **CI/CD** | **GitHub Actions** | Automated compilation and bundling validation pipeline |
-
-### Verified Midnight Network Package Versions
-
-```json
-{
-  "@midnight-ntwrk/compact-runtime": "0.15.0",
-  "@midnight-ntwrk/midnight-js-contracts": "4.1.1",
-  "@midnight-ntwrk/midnight-js-http-client-proof-provider": "4.1.1",
-  "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.1.1",
-  "@midnight-ntwrk/midnight-js-level-private-state-provider": "4.1.1",
-  "@midnight-ntwrk/midnight-js-network-id": "4.1.1",
-  "@midnight-ntwrk/midnight-js-node-zk-config-provider": "4.1.1",
-  "@midnight-ntwrk/midnight-js-protocol": "4.1.1",
-  "@midnight-ntwrk/midnight-js-types": "4.1.1",
-  "@midnight-ntwrk/midnight-js-utils": "4.1.1",
-  "@midnight-ntwrk/wallet-sdk": "1.2.0",
-  "@midnight-ntwrk/wallet-sdk-dust-wallet": "4.2.0",
-  "@midnight-ntwrk/wallet-sdk-facade": "4.1.0"
-}
-```
-
----
-
-## 🌐 Midnight Preview Network Configuration
-
-All endpoints are configurable through environment variables (`.env`):
-
-| Variable | Default Value | Description |
-| :--- | :--- | :--- |
-| `MIDNIGHT_NETWORK` | `preview` | Midnight Network ID (`preview` / `preprod` / `undeployed`) |
-| `INDEXER_HTTP_URL` | `https://api-preview.1am.xyz/api/v4/graphql` | Preview Indexer GraphQL HTTP Endpoint |
-| `INDEXER_WS_URL` | `wss://api-preview.1am.xyz/api/v4/graphql/ws` | Preview Indexer WebSocket Endpoint |
-| `NODE_RPC_URL` | `wss://rpc.preview.midnight.network` | Midnight Preview Node RPC WebSocket Endpoint |
-| `PROOF_SERVER_URL` | `http://127.0.0.1:6300` | Local/Remote Proving Server Endpoint |
-| `MASTER_WALLET_SEED` | `[SECURE_SEED_PHRASE]` | Relayer Sponsor Master Wallet Seed Phrase |
-| `DUSTIFY_API_KEY` | `dustify_dev_key_preview_2026` | API Key for Relayer Authentication |
-| `ALLOWED_ORIGINS` | `http://localhost:5173,http://localhost:3000` | CORS Allowed Origins |
-| `RATE_LIMIT_MAX` | `100` | Max requests per minute per IP |
-| `PORT` | `3001` | Relayer API HTTP Port |
-
----
-
-## 📋 Prerequisites
-
-- **Operating System:** Windows with **WSL2 Ubuntu 24.04 LTS** (or native Linux/macOS)
-- **Node.js:** `v18.19.1` or `v22.x`
-- **Package Manager:** `npm` (v9+)
-- **Docker / Docker Desktop:** For running the local Midnight Proof Server (`http://127.0.0.1:6300`)
-- **Network Access:** Outbound HTTPS/WSS access to Midnight Preview endpoints
-
-> [!WARNING]
-> **Runtime Notice:**
-> Midnight cryptography and WASM packages require a Linux runtime. Always run backend services and validation tests inside **WSL2 Ubuntu**, not Windows PowerShell.
-
----
-
-## 🚀 Run Locally (WSL2 Ubuntu)
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/yashannadate/DUSTify.git
-cd DUSTify
-```
-
-### 2. Configure Environment Variables
-```bash
-cp .env.example .env
-```
-
-### 3. Build Subpackages
-```bash
-# Build Client SDK & Frontend from monorepo root
-npm run build
-```
-
-### 4. Start Local Proof Server (Optional / Docker)
-```bash
-docker run -p 6300:6300 midnightnetwork/proof-server:latest
-```
-
-### 5. Start DUSTify Relayer API
-```bash
-# Terminal 1 (inside WSL2 Ubuntu)
-npm run dev:relayer
-```
-*The Relayer initializes on `http://localhost:3001` and connects to Midnight Preview.*
-
-### 6. Start Frontend Dashboard
-```bash
-# Terminal 2
-npm run dev:frontend
-```
-*Open [http://localhost:5173](http://localhost:5173) in your browser.*
-
-### 7. Run Test & Telemetry Verification
-```bash
-# In WSL2 Ubuntu
-npm run test:relayer
-```
-
----
-
-## 🔌 Client SDK Usage Guide
+## 🔌 API Usage & Client SDK Guide
 
 ### 1. Install Client SDK
 ```bash
 npm install @dustify/sdk
 ```
 
-### 2. Submit a Sponsored Transaction
+### 2. Submit a Sponsored Transaction (Backend / Serverless Integration)
+
+> ⚠️ **Security Architecture Notice:**
+> The DUSTify API key is a confidential server-side credential. In production architectures, `@dustify/sdk` must be instantiated in your dApp's backend API or serverless functions (e.g. Next.js API route, Express server). Do **not** embed your Relayer API key into public client-side browser JavaScript.
+
 ```typescript
 import { DustifyClient } from '@dustify/sdk';
 
-// 1. Initialize client with Relayer endpoint & API Key
+// 1. Initialize client with Relayer endpoint & API Key (server-side environment variable)
 const dustify = new DustifyClient({
-  relayerUrl: 'http://localhost:3001',
-  apiKey: 'dustify_dev_key_preview_2026',
+  relayerUrl: process.env.DUSTIFY_RELAYER_URL || 'http://localhost:3001',
+  apiKey: process.env.DUSTIFY_API_KEY || '<YOUR_API_KEY>',
 });
 
-// 2. User executes circuit locally with private witness (0 DUST spent)
-// Kachina protocol ensures witness never leaves the client browser
+// 2. User executes circuit locally with private witness (0 DUST paid by end user)
+// Private witness generation remains strictly inside client memory
 const unboundTx = await proofProvider.proveTx(unprovenTx);
 
 // 3. One-line gas sponsorship and on-chain submission
 const receipt = await dustify.sponsorAndSubmit(unboundTx, {
   circuitId: 'storeMessage',
-  contractAddress: 'optional_target_contract_address',
+  contractAddress: 'f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5',
 });
 
-if (receipt.status === 'CONFIRMED') {
-  console.log('✅ Confirmed on Midnight Preview! TxId:', receipt.txId);
+if (receipt.status === 'SUBMITTED') {
+  console.log('✅ Broadcast to Midnight Preview Node RPC! TxId:', receipt.txId);
   console.log('⚡ Sponsored DUST Fee:', receipt.sponsoredDustFee);
 } else if (receipt.status === 'RELAYER_NOT_FUNDED') {
-  console.warn('⚠️ Relayer awaiting DUST faucet funding:', receipt.message);
+  console.warn('⚠️ Relayer awaiting DUST capacity:', receipt.message);
 }
 ```
 
@@ -503,12 +237,10 @@ console.log('Sponsor Sync Status:', status.sponsorWalletSyncStatus);
 console.log('Available DUST:', status.sponsorDustAvailability.balanceDust);
 ```
 
----
+### 4. REST API Specification
 
-## 🔗 Relayer API Specification
-
-### `GET /api/v1/status`
-Public health telemetry endpoint.
+#### `GET /api/v1/status`
+Public health telemetry endpoint. Returns current sync state and live DUST capacity.
 
 **Response `(200 OK)`:**
 ```json
@@ -521,8 +253,8 @@ Public health telemetry endpoint.
   "sponsorWalletSyncStatus": "SYNCED",
   "isSynced": true,
   "sponsorDustAvailability": {
-    "balanceSpecks": "325254459999999998",
-    "balanceDust": "325254460000.000000 DUST",
+    "balanceSpecks": "575361889999999997",
+    "balanceDust": "575361890000.000000 DUST",
     "hasDust": true,
     "status": "READY"
   },
@@ -534,32 +266,31 @@ Public health telemetry endpoint.
   }
 }
 ```
+*Note: Current sponsor DUST balance is runtime-dependent and continuously generated from registered tNIGHT UTXOs.*
 
----
-
-### `POST /api/v1/relay`
+#### `POST /api/v1/relay`
 Authenticated transaction sponsorship endpoint.
 
 **Headers:**
 - `Content-Type: application/json`
-- `x-api-key: dustify_dev_key_preview_2026`
+- `x-api-key: <YOUR_API_KEY>`
 
 **Request Body:**
 ```json
 {
   "payloadHex": "00112233445566778899aabbccddeeff...",
   "circuitId": "storeMessage",
-  "contractAddress": "optional_contract_address"
+  "contractAddress": "f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5"
 }
 ```
 
 **Success Response `(200 OK)`:**
 ```json
 {
-  "status": "CONFIRMED",
-  "txId": "0a1b2c3d4e5f6789...",
+  "status": "SUBMITTED",
+  "txId": "003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c",
   "circuitId": "storeMessage",
-  "contractAddress": null,
+  "contractAddress": "f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5",
   "sponsoredDustFee": "0.0042 DUST",
   "timestamp": 1724698000000
 }
@@ -575,127 +306,89 @@ Authenticated transaction sponsorship endpoint.
 
 ---
 
-## 💾 Wallet State Persistence & Fast Sync
+## 🔐 Security & Trust Model
 
-### Cold Startup vs. Warm Sync
-On cold startup without cached checkpoints, a Midnight wallet must process historical indexer blocks to index relevant UTXOs.
+| Domain | Client Machine | DUSTify Relayer |
+| :--- | :---: | :---: |
+| **User Secret Keys** | Stays strictly on client | **Never transmitted or requested** |
+| **Private Witness** | Evaluated in local memory | **Zero access** (Evaluated in local prover) |
+| **ZK Proof Integrity** | Generated locally | **Cryptographically bound** (Any tampering invalidates proof) |
+| **Sponsor Wallet Keys** | Inaccessible to client | Stored securely in backend environment variables |
+| **DUST Token Balance** | 0 DUST paid by end user | Deducted from Master Sponsor Wallet capacity |
+| **Transaction Submission** | Delegated to relayer | Broadcast via Node RPC WebSocket |
 
-DUSTify implements an atomic disk checkpointing mechanism in `.data/wallet-state/preview/`:
-- `dust.json` — Serialized DUST wallet coins and capacity state.
-- `shielded.json` — Serialized Zswap coin state and nullifiers.
-- `unshielded.json` — Serialized public keystore state.
-
-```
-Cold Replay Sync:   ████████████████████████████████  (~45-90 seconds)
-DUSTify Warm Sync:  █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  (~1.40 seconds)
-```
-
-> **Empirical Measurement:** Warm restart synchronization was empirically verified at **~1.40 seconds** in WSL2 Ubuntu.
-
----
-
-## 🎬 Demo Video
-
-> ⏳ **Demo Video Status:** The demonstration video will be recorded and published following final testnet sponsor faucet allocation.
-
-### What the Demo Shows:
-1. **Zero-Gas User Entry:** Opening the DUSTify frontend with 0 DUST in user wallet.
-2. **Preview Network Connectivity:** Real-time pulse indicator confirming Midnight Preview connection.
-3. **Relayer Telemetry Check:** Live inspection of Relayer health, applied block index, and sponsor address.
-4. **Local Witness Proving:** Interactive governance vote in `Voting.compact` evaluated locally on client.
-5. **WASM Binary Handoff:** Client SDK serializing `UnboundTransaction` and transmitting over HTTP.
-6. **Sponsor Fee Attachment:** Backend Relayer executing `balanceUnboundTransaction()`.
-7. **Recipe Sealing:** `finalizeRecipe()` converting recipe to `FinalizedTransaction`.
-8. **Node RPC Broadcast:** Transaction broadcast to `wss://rpc.preview.midnight.network`.
-9. **On-Chain Confirmation:** Real-time display of confirmed Transaction ID (TxHash).
-10. **Explorer Verification:** Viewing the public state mutation on the Midnight Preview Indexer.
+### Security Controls & Secret Hygiene
+1. **API Key Authentication:** Relayer endpoints enforce `x-api-key` validation to restrict access to authorized callers.
+2. **Server-Side Secret Storage:** `DUSTIFY_API_KEY` and `MASTER_WALLET_SEED` reside strictly in server environment variables.
+3. **One-Time API-Key Presentation:** The frontend API key creation modal presents the generated key exactly once, wiping it from memory upon confirmation.
+4. **No Plaintext Secret in localStorage:** Browser local storage retains only non-sensitive metadata (key ID, masked prefix `dustify_...`, creation timestamp).
+5. **No Secrets in Git:** `.gitignore` protects all `.env` files, `.data/` directories, wallet seed caches, and keystore state.
+6. **No API-Key Logging:** Keys are never logged in server stdout, error responses, or telemetry output.
+7. **Client/Backend Security Boundary:** Public browser client bundles must never include production relayer keys; requests should route through backend proxies.
+8. **Current Single-Tenant Scope:** Level 4 operates with a single authoritative server secret. Multi-tenant database key isolation is planned for Level 5.
 
 ---
 
-## 📁 Project Structure
+## 🌐 Preview Deployment Details
 
+<p align="center">
+  <img src="docs/assets/relayer-gateway-health.png" alt="DUSTify Relayer Gateway Telemetry & Health" width="100%" />
+</p>
+
+DUSTify is verified and operational on the **Midnight Preview Network**:
+
+| Property | Value / Identifier | Notes |
+| :--- | :--- | :--- |
+| **Deployed Contract** | `hello-world.compact` | Single Level 4 demonstration contract |
+| **Contract Address** | `f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5` | Deployed on Midnight Preview |
+| **Contract Deployment TxID** | `00b65b18a36dc18030e1c5c8173dccf18e492a12005a1f9e293111a028d8e0c620` | Real on-chain deployment transaction |
+| **Master Sponsor Address** | `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd` | Funded with 5,000 tNIGHT; Active DUST Capacity Generator |
+| **DUST Registration TxID** | `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` | Real on-chain NIGHT UTXO registration for continuous DUST generation |
+| **Verified Sponsored TxID** | `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` | Real on-chain sponsored transaction (0 DUST paid by end user) |
+| **Node RPC URL** | `wss://rpc.preview.midnight.network` | Midnight Preview Node RPC WebSocket |
+| **Indexer GraphQL URL** | `https://indexer.preview.midnight.network/api/v4/graphql` | Official Midnight Preview GraphQL Indexer |
+| **Observed Warm Sync** | **~1.40 seconds** | Empirically verified warm state restore benchmark in WSL2 Ubuntu |
+
+---
+
+## 🧪 Testing & Verification
+
+All core functionality is accompanied by automated build, typecheck, and test scripts:
+
+```bash
+# 1. Build Client SDK
+cd client-sdk && npm run build
+
+# 2. Run SDK Serialization Unit Test
+npx tsx tests/unit/sdk-serialization.test.ts
+
+# 3. Typecheck Relayer API
+cd relayer-api && npx tsc --noEmit
+
+# 4. Build Frontend Production Bundle
+cd frontend && npm run build
 ```
-DUSTify/
-├── .github/
-│   └── workflows/
-│       └── ci.yml                       # GitHub Actions CI workflow
-├── contracts/                           # Compact Smart Contracts & Managed Artifacts
-│   ├── src/
-│   │   ├── DustifyRegistry.compact      # Master sponsorship registry & quota policy
-│   │   ├── Voting.compact               # Anonymous governance voting showcase
-│   │   └── hello-world.compact          # Public state mutation showcase
-│   ├── artifacts/                       # Generated keys, ZKIR, and contract runtime bindings
-│   └── README.md                        # Smart contract compilation & deployment docs
-├── client-sdk/                          # @dustify/sdk Client Library
-│   ├── src/
-│   │   ├── DustifyClient.ts             # Main SDK class & binary serialization
-│   │   └── index.ts                     # Public SDK exports & TypeScript types
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── README.md
-├── relayer-api/                         # DUSTify Master Relayer Backend
-│   ├── src/
-│   │   ├── config.ts                    # Zero-hardcoding environment configuration
-│   │   ├── index.ts                     # Express server, rate limiting, and routes
-│   │   ├── middleware/
-│   │   │   └── auth.ts                  # API key & CORS origin authentication
-│   │   └── services/
-│   │       └── midnight.ts              # MidnightSponsorService & balanceUnboundTransaction
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── README.md
-├── frontend/                            # React + Vite + Tailwind CSS Dashboard
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.tsx               # Status badges & multi-tab navigation
-│   │   │   ├── OverviewPage.tsx         # System topology & friction comparison
-│   │   │   ├── DemoPage.tsx             # Interactive Voting & Message execution
-│   │   │   ├── RelayerPage.tsx          # Live endpoint telemetry & latency probe
-│   │   │   ├── DocsPage.tsx             # In-app developer guide & code snippets
-│   │   │   └── Footer.tsx               # Links & license
-│   │   ├── App.tsx                      # Main application view & telemetry polling
-│   │   ├── types.ts                     # Frontend TypeScript data interfaces
-│   │   ├── index.css                    # Tailwind minimalist monochrome styling
-│   │   └── main.tsx                     # React DOM entry point
-│   ├── package.json
-│   ├── tailwind.config.js
-│   ├── vite.config.ts
-│   └── README.md
-├── scripts/                             # Operational & Automation Shell Scripts
-│   ├── setup_wsl.sh                     # WSL2 environment bootstrap & verification
-│   ├── compile.sh                       # Monorepo build script (SDK + Frontend)
-│   ├── deploy_preview.sh                # Contract deployment script on Midnight Preview
-│   └── demo.sh                          # Interactive demo launcher
-├── tests/                               # Test Suites & Validation Experiments
-│   ├── unit/
-│   │   └── sdk-serialization.test.ts    # Unit test for SDK payload encoding
-│   ├── integration/
-│   │   ├── test-relayer-endpoints.ts    # Relayer service initialization test
-│   │   └── test-sdk-client.ts           # SDK integration test with live Relayer
-│   └── sponsorship/
-│       ├── real-world-validation.ts     # Preview network validation harness
-│       └── verify-preview-endpoints.js  # Network connectivity probe
-├── docs/                                # Technical Documentation & Architecture
-│   ├── ARCHITECTURE.md                  # Comprehensive architectural specification
-│   ├── PROTOCOL_VALIDATION.md           # Empirical verification results & benchmarks
-│   ├── API.md                           # Complete REST API & SDK reference
-│   ├── SECURITY.md                      # Security model, threat analysis & privacy
-│   ├── SETUP.md                         # Local development & WSL2 setup guide
-│   ├── DEMO.md                          # Hackathon demo & walkthrough script
-│   └── x-profile.md                     # Product X (Twitter) launch strategy
-├── assets/                              # Visual Assets & Blueprints
-│   ├── architecture/
-│   └── screenshots/
-├── .data/                               # Persisted wallet sync checkpoints (gitignored)
-│   ├── wallet-state/preview/
-│   └── README.md
-├── .env.example                         # Environment configuration template
-├── .gitignore                           # Git ignore rules
-├── package.json                         # Monorepo workspaces configuration
-├── PROPOSAL.md                          # Midnight Moonshots Level 4 Project Proposal
-├── vercel.json                          # Vercel deployment configuration
-└── README.md                            # Main project documentation
-```
+
+### Verification Matrix
+
+| Test Suite | Command | Expected Output | Status |
+| :--- | :--- | :--- | :---: |
+| **SDK Unit Test** | `npx tsx tests/unit/sdk-serialization.test.ts` | `All Unit Tests Passed` | 🟢 PASS |
+| **Relayer Typecheck** | `cd relayer-api && npx tsc --noEmit` | Exit code 0, 0 errors | 🟢 PASS |
+| **Frontend Bundle** | `cd frontend && npm run build` | `dist/` built in <8s, 0 errors | 🟢 PASS |
+| **CI/CD Workflow** | `.github/workflows/ci.yml` | Automated build on push/PR | 🟢 PASS |
+
+---
+
+## ⚠️ Current Limitations & Technical Honesty
+
+In the interest of technical integrity and transparency:
+
+1. **Single-Tenant Scope:** The Level 4 MVP validates against a single server-side `DUSTIFY_API_KEY`. Multi-tenant database key isolation and per-dApp quotas are part of the Level 5 roadmap.
+2. **Client-Side Proving Requirement:** DUSTify abstracts gas fees and submission, but does **not** replace client-side witness evaluation. Users must still evaluate circuits locally to maintain privacy.
+3. **Sponsor DUST Dependency:** Transaction sponsorship requires that the backend Master Sponsor Wallet maintains active DUST capacity generated from registered tNIGHT UTXOs. When capacity is depleted, the relayer safely returns `RELAYER_NOT_FUNDED`.
+4. **Testnet Phase:** Configured and validated exclusively for the **Midnight Preview** network; not yet audited for production mainnet use.
+5. **Runtime Environment:** Master Relayer backend requires a Linux runtime with native WASM compatibility (WSL2 Ubuntu 24.04 LTS).
 
 ---
 
@@ -704,48 +397,42 @@ DUSTify/
 ### 🌔 Level 4 — Waxing Gibbous (Current Phase)
 - [x] Verified Midnight Preview RPC & Indexer connectivity
 - [x] Implemented `balanceUnboundTransaction` → `finalizeRecipe` → `submitTransaction` pipeline
-- [x] Implemented atomic wallet state persistence (~1.40s warm sync)
+- [x] Implemented atomic wallet state persistence (~1.40s warm sync observed benchmark)
 - [x] Built authenticated Relayer API with rate limiting and health telemetry
 - [x] Built `@dustify/sdk` with native binary WASM serialization
 - [x] Built React + Vite + Tailwind developer dashboard & execution simulator
 - [x] Configured GitHub Actions CI workflow
-- [x] Prepared Product X (Twitter) profile & launch thread
-- [x] 22 atomic, chronological Git commits
-- [ ] Complete Preview faucet tNIGHT funding & DUST UTXO registration
-- [ ] Record final live execution video on Midnight Preview
+- [x] Prepared Product X (Twitter) profile & launch thread ([@dustifymidnight](https://x.com/dustifymidnight))
+- [x] 25 atomic, chronological Git commits on `main`
+- [x] Complete Preview faucet tNIGHT funding & DUST UTXO registration (TxID: `0050c425...`)
+- [x] Executed real on-chain sponsored transaction on Midnight Preview (TxID: `003986f9...`)
+- [x] Deployed `hello-world.compact` contract on Midnight Preview (`f4578842...`, TxID: `00b65b18...`)
+- [x] Recorded demonstration video walkthrough on Midnight Preview
 
 ### 🌕 Level 5 — Full Moon
 - [ ] Publish `@dustify/sdk` to npm registry
-- [ ] Developer portal with self-service API key generation
+- [ ] Multi-tenant API key management with database-backed key isolation
+- [ ] Self-service API key rotation and organization quota policies
 - [ ] Multi-tenant sponsor pool with dynamic DUST replenishment alerts
-- [ ] Support for multi-contract sponsorship policies and rate budgets
 - [ ] Integration with leading Midnight ecosystem dApps
 
 ### 🌝 Level 6 — Supermoon
 - [ ] Decentralized Relayer Network (DRN) with stake-based slashing
-- [ ] Mainnet deployment and smart contract audit
+- [ ] Mainnet deployment and third-party smart contract audit
 - [ ] Cross-chain gas sponsorship (pay fees in ADA/USDC, sponsor in DUST)
 - [ ] Enterprise SLA relayer infrastructure
 
 ---
 
-## ⚠️ Current Limitations & Technical Honesty
-
-In the interest of technical integrity and transparency:
-
-1. **Sponsor Wallet DUST Dependency:** Transaction sponsorship requires that the backend Master Wallet contains registered DUST capacity. When the sponsor has 0 DUST, the relayer safely rejects submission with `RELAYER_NOT_FUNDED`.
-2. **Kachina Protocol Boundary:** DUSTify abstracts gas fees and submission, but does **not** replace client-side witness evaluation. Users must still evaluate circuits locally to maintain privacy.
-3. **Testnet Phase:** Currently targetted for the **Midnight Preview** network; not yet audited for production mainnet use.
-4. **Deployment Scope:** Backend Relayer requires a Node.js runtime with Linux WASM compatibility (WSL2 Ubuntu); static frontend can be deployed to standard web hosts.
-
----
-
 ## 📄 Level 4 Reviewer Evidence Matrix
 
-| Deliverable | Location in Repository | Verification Command / URL |
+| Deliverable | Location in Repository | Verification Command / Evidence |
 | :--- | :--- | :--- |
 | **Monorepo Codebase** | Root Workspace | [GitHub Repository](https://github.com/yashannadate/DUSTify) |
 | **Proposal Document** | [`PROPOSAL.md`](PROPOSAL.md) | Level 4 Moonshot Proposal |
+| **Contract Deployment** | [`contracts/src/hello-world.compact`](contracts/src/hello-world.compact) | Address: `f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5`<br>TxID: `00b65b18a36dc18030e1c5c8173dccf18e492a12005a1f9e293111a028d8e0c620` |
+| **Sponsored Tx On-Chain** | [`scripts/test_user_sponsor_flow.ts`](scripts/test_user_sponsor_flow.ts) | TxID: `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` (0 DUST user cost) |
+| **DUST Registration Tx** | [`scripts/register_dust.ts`](scripts/register_dust.ts) | TxID: `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` (5,000 tNIGHT UTXO) |
 | **Relayer Backend** | [`relayer-api/src/`](relayer-api/src) | `npm run dev:relayer` (Port 3001) |
 | **Client SDK** | [`client-sdk/src/`](client-sdk/src) | `npm run build --prefix client-sdk` |
 | **Frontend Application** | [`frontend/src/`](frontend/src) | `npm run dev:frontend` (Port 5173) |
@@ -754,13 +441,19 @@ In the interest of technical integrity and transparency:
 | **SDK Integration Test** | [`tests/integration/test-sdk-client.ts`](tests/integration/test-sdk-client.ts) | `npm run test:sdk` |
 | **Unit Test Suite** | [`tests/unit/sdk-serialization.test.ts`](tests/unit/sdk-serialization.test.ts) | `npm run test:unit` |
 | **Architecture Specification** | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Markdown Architecture Deep-Dive |
-| **Security & Threat Model** | [`docs/SECURITY.md`](docs/SECURITY.md) | Security Specification |
-| **Product X Profile** | [`docs/x-profile.md`](docs/x-profile.md) | Markdown asset specification |
+| **Protocol Validation Report** | [`docs/PROTOCOL_VALIDATION.md`](docs/PROTOCOL_VALIDATION.md) | Empirical verification results & on-chain proofs |
+| **Security & Threat Model** | [`docs/SECURITY.md`](docs/SECURITY.md) | Security & Trust Specification |
+| **Demo Video** | [Google Drive Folder](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6) | Video walkthrough and demonstration assets |
+| **Product X Profile** | [@dustifymidnight](https://x.com/dustifymidnight) | [https://x.com/dustifymidnight](https://x.com/dustifymidnight) |
 
 ---
 
-## 🙏 Acknowledgments
+## 📜 License & Acknowledgments
 
+### License
+This project is licensed under the [MIT License](LICENSE).
+
+### Acknowledgments
 - **Midnight Foundation & IOG:** For the groundbreaking **Midnight Network** and **Kachina Protocol** privacy architecture.
 - **RiseIn:** For organizing the **New Moon to Full: Monthly Moonshots on Midnight** developer program.
 - **Midnight Developer Community:** For indexer telemetry endpoints, SDK documentation, and support.
@@ -771,7 +464,7 @@ In the interest of technical integrity and transparency:
 
 ### 🌙 New Moon to Full: Monthly Moonshots on Midnight
 
-**Built with 💜 by Yash Annadate**
+**Built with 💙 for the Midnight Ecosystem by Yash Annadate**
 
 *MIT Licensed • 2026 Level 4 Moonshot Submission*
 

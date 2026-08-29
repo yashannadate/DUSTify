@@ -100,7 +100,7 @@ app.post('/api/v1/relay', authMiddleware, async (req, res) => {
     const result = await sponsorService.sponsorAndSubmit(payloadHex, circuitId);
 
     res.json({
-      status: 'CONFIRMED',
+      status: 'SUBMITTED',
       txId: result.txId,
       circuitId: circuitId || null,
       contractAddress: contractAddress || null,

@@ -10,7 +10,7 @@ export interface SponsorOptions {
 }
 
 export interface SponsorResponse {
-  status: 'CONFIRMED' | 'RELAYER_NOT_FUNDED' | 'REJECTED';
+  status: 'SUBMITTED' | 'CONFIRMED' | 'RELAYER_NOT_FUNDED' | 'REJECTED';
   txId?: string;
   circuitId?: string | null;
   contractAddress?: string | null;
@@ -70,7 +70,7 @@ export class DustifyClient {
   }
 
   /**
-   * Serializes an UnboundTransaction (proven locally at 0 DUST cost)
+   * Serializes an UnboundTransaction (proven locally with 0 DUST paid by end user)
    * and routes it to the DUSTify Relayer for DUST fee sponsorship.
    *
    * The client / user needs 0 DUST tokens, 0 DUST capacity, and 0 faucet navigation.

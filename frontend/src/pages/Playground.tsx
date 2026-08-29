@@ -158,7 +158,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
       const relayRes = await apiClient.submitRelay({
         payloadHex: simulatedPayloadHex,
         circuitId: 'incrementCounter',
-        contractAddress: 'DustifyRegistry.compact',
+        contractAddress: 'hello-world.compact',
       });
 
       if (relayRes.isRelayerNotFunded || (relayRes.data && relayRes.data.status === 'RELAYER_NOT_FUNDED')) {
@@ -192,17 +192,17 @@ export const Playground: React.FC<PlaygroundProps> = ({
         apiClient.saveTransaction(record);
         onTxCreated(record);
         setResultTx(record);
-      } else if (relayRes.success && relayRes.data?.status === 'CONFIRMED') {
-        // Real on-chain confirmation
+      } else if (relayRes.success && (relayRes.data?.status === 'SUBMITTED' || relayRes.data?.status === 'CONFIRMED')) {
+        // Real on-chain submission
         updateStep(3, 'success', 'Payload dispatched to Relayer.');
         updateStep(4, 'success', `Balanced with sponsor DUST (${relayRes.data.sponsoredDustFee || '0.0042 DUST'}).`);
         updateStep(5, 'success', `Submitted to RPC: ${relayRes.data.txId?.substring(0, 16)}...`);
-        updateStep(6, 'success', 'Confirmed state transition on Midnight Preview.');
+        updateStep(6, 'success', 'Broadcast to Midnight Preview Node RPC.');
 
         const record: RelayedTxRecord = {
           id: `relay_${Math.random().toString(36).substring(2, 9)}`,
           txId: relayRes.data.txId,
-          status: 'CONFIRMED',
+          status: 'SUBMITTED',
           circuitId: 'incrementCounter',
           network: 'Midnight Preview',
           sponsorAddress: relayRes.data.sponsorAddress || 'mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd',
@@ -264,7 +264,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
                 <h3 className="text-base font-semibold text-white mt-0.5">Counter Contract</h3>
               </div>
               <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
-                DustifyRegistry.compact
+                hello-world.compact
               </span>
             </div>
 
@@ -303,7 +303,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
               </div>
               <div className="space-y-1 text-zinc-400 text-[11px]">
                 <div className="flex items-center space-x-2">
-                  <span className="text-brand-400">🟣</span>
+                  <span className="text-brand-400">🔵</span>
                   <span>Proof generated locally with private witness</span>
                 </div>
                 <div className="flex items-center space-x-2">

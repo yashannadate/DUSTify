@@ -43,7 +43,7 @@ export interface SponsorStatus {
 }
 
 export interface SponsorResult {
-  status: 'CONFIRMED';
+  status: 'SUBMITTED';
   txId: string;
   sponsoredDustFee: string;
   timestamp: number;
@@ -366,7 +366,7 @@ export class MidnightSponsorService {
     this.savePersistedState(this.walletCtx.wallet).catch(() => {});
 
     return {
-      status: 'CONFIRMED',
+      status: 'SUBMITTED',
       txId,
       sponsoredDustFee: '0.0042 DUST',
       timestamp: Date.now(),

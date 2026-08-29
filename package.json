@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "npm run build --prefix client-sdk && npm run build --prefix frontend",
+    "build:sdk": "wsl bash -c \"cd /mnt/d/DUSTify/client-sdk && npm run build\"",
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:relayer": "wsl bash -c \"cd /mnt/d/DUSTify/relayer-api && npx tsx src/index.ts\"",
     "dev:relayer:linux": "npm run dev --prefix relayer-api",

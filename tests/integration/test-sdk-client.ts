@@ -4,7 +4,7 @@ async function testSdk() {
   console.log('Testing DustifyClient SDK against live relayer...');
   const client = new DustifyClient({
     relayerUrl: 'http://localhost:3001',
-    apiKey: 'dustify_dev_key_preview_2026',
+    apiKey: process.env.DUSTIFY_API_KEY || 'dustify_dev_key_preview',
   });
 
   const isHealthy = await client.checkHealth();

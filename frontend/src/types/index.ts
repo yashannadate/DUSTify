@@ -37,7 +37,7 @@ export interface RelayerTelemetry {
   endpoints: RelayerEndpoints;
 }
 
-export type TxStatus = 'CONFIRMED' | 'PENDING' | 'FAILED' | 'DEMO' | 'RELAYER_NOT_FUNDED';
+export type TxStatus = 'SUBMITTED' | 'CONFIRMED' | 'PENDING' | 'FAILED' | 'DEMO' | 'RELAYER_NOT_FUNDED';
 
 export interface RelayedTxRecord {
   id: string;

@@ -7,7 +7,8 @@ This document contains the official branding, bio, profile assets, and launch th
 ## 🏷️ Profile Metadata
 
 - **Account Name:** DUSTify | Zero-Gas for Midnight
-- **Handle Suggestion:** `@dustify_net` / `@dustify_midnight`
+- **Live Profile URL:** [https://x.com/dustifymidnight](https://x.com/dustifymidnight)
+- **Official Handle:** `@dustifymidnight`
 - **Location:** Midnight Preview Network / Decentralized
 - **Website Link:** `https://github.com/yashannadate/DUSTify`
 - **Bio (Max 160 Characters):**

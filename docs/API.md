@@ -15,7 +15,7 @@ import { DustifyClient } from '@dustify/sdk';
 
 const dustify = new DustifyClient({
   relayerUrl: 'http://localhost:3001',
-  apiKey: 'dustify_dev_key_preview_2026',
+  apiKey: process.env.DUSTIFY_API_KEY || '<YOUR_API_KEY>',
   timeoutMs: 30000,
 });
 ```
@@ -85,7 +85,7 @@ Public network and relayer health telemetry endpoint.
 Authenticated transaction sponsorship submission endpoint.
 
 **Headers:**
-- `x-api-key`: `dustify_dev_key_preview_2026`
+- `x-api-key`: `<YOUR_API_KEY>`
 - `Content-Type`: `application/json`
 
 **Request Body:**
