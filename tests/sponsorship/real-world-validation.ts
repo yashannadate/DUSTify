@@ -85,7 +85,7 @@ export async function runRealWorldSuite() {
   console.log('================================================================\n');
 
   // Load compiled contract
-  const zkConfigPath = path.resolve('C:/Users/Yash/my-app/contracts/managed/hello-world');
+  const zkConfigPath = path.resolve(__dirname, '../../contracts/managed/hello-world');
   const contractPath = path.join(zkConfigPath, 'contract', 'index.js');
   const HelloWorld = await import(`file://${contractPath}`);
   const compiledContract = CompiledContract.make('hello-world', HelloWorld.Contract).pipe(

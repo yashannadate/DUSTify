@@ -18,39 +18,7 @@ import {
 } from '@midnight-ntwrk/wallet-sdk';
 import { RelayerConfig } from '../config.js';
 
-// Polyfill WebSocket in global environment for SDK WebSocket client
-globalThis.WebSocket = WebSocket;
-
-// Polyfill Array.prototype.toSpliced for Node v18
-if (!Array.prototype.toSpliced) {
-  Array.prototype.toSpliced = function (start: number, deleteCount: number, ...items: any[]) {
-    const copy = this.slice();
-    copy.splice(start, deleteCount, ...items);
-    return copy;
-  };
-}
-
-// Polyfill Iterator.prototype.map for Node v18
-const IteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
-if (!IteratorPrototype.map) {
-  IteratorPrototype.map = function* (fn: (item: any, index: number) => any) {
-    let index = 0;
-    for (const item of this as any) {
-      yield fn(item, index++);
-    }
-  };
-}
-
-// Polyfill Set.prototype.difference for Node v18
-if (!(Set.prototype as any).difference) {
-  (Set.prototype as any).difference = function (other: Set<any>) {
-    const diff = new Set(this);
-    for (const elem of other) {
-      diff.delete(elem);
-    }
-    return diff;
-  };
-}
+import '../polyfills.js';
 
 export interface SponsorStatus {
   service: string;
@@ -101,6 +69,10 @@ export class MidnightSponsorService {
   constructor(config: RelayerConfig) {
     this.config = config;
     this.persistDir = resolvePersistDir(this.config.environment);
+  }
+
+  getSponsorAddress(): string | null {
+    return this.sponsorAddress;
   }
 
   private deriveKeys(seed: string) {
@@ -169,7 +141,7 @@ export class MidnightSponsorService {
       const dustSecretKey = ledger.DustSecretKey.fromSeed(keys[Roles.Dust]);
       const unshieldedKeystore = createKeystore(keys[Roles.NightExternal], this.config.environment);
       const addr = unshieldedKeystore.getBech32Address();
-      this.sponsorAddress = typeof addr === 'string' ? addr : String(addr?.value || addr);
+      this.sponsorAddress = typeof addr === 'string' ? addr : String((addr as any)?.value || addr);
 
       console.log(`[DUSTify Relayer] Sponsor Unshielded Address: ${this.sponsorAddress}`);
 
@@ -343,9 +315,19 @@ export class MidnightSponsorService {
 
     // 2. Safely deserialize UnboundTransaction
     let unboundTx: any;
+    let isUnproven = false;
     try {
       const payloadBytes = Uint8Array.from(Buffer.from(rawPayloadHex, 'hex'));
-      unboundTx = Transaction.deserialize('signature', 'proof', 'binding', payloadBytes);
+      try {
+        unboundTx = Transaction.deserialize('signature', 'proof', 'binding', payloadBytes);
+      } catch {
+        try {
+          unboundTx = Transaction.deserialize('signature', 'pre-proof', 'pre-binding', payloadBytes);
+          isUnproven = true;
+        } catch {
+          unboundTx = Transaction.deserialize('signature', 'proof', 'pre-binding', payloadBytes);
+        }
+      }
     } catch (err: any) {
       const parseErr: any = new Error(`Failed to deserialize UnboundTransaction: ${err.message}`);
       parseErr.code = 'INVALID_TRANSACTION_PAYLOAD';
@@ -353,19 +335,20 @@ export class MidnightSponsorService {
     }
 
     console.log(`[DUSTify Relayer] Sponsoring transaction for circuit: ${circuitId || 'general'}`);
-    console.log('[DUSTify Relayer] Executing balanceUnboundTransaction()...');
+    console.log(`[DUSTify Relayer] Executing ${isUnproven ? 'balanceUnprovenTransaction' : 'balanceUnboundTransaction'}...`);
 
     // 3. Balance transaction using Sponsor Master DUST Wallet
-    const recipe = await this.walletCtx.wallet.balanceUnboundTransaction(
-      unboundTx,
-      {
-        shieldedSecretKeys: this.walletCtx.shieldedSecretKeys,
-        dustSecretKey: this.walletCtx.dustSecretKey,
-      },
-      {
-        ttl: new Date(Date.now() + 180_000), // 3-minute TTL
-      }
-    );
+    const balanceOptions = {
+      shieldedSecretKeys: this.walletCtx.shieldedSecretKeys,
+      dustSecretKey: this.walletCtx.dustSecretKey,
+    };
+    const balanceMeta = {
+      ttl: new Date(Date.now() + 180_000), // 3-minute TTL
+    };
+
+    const recipe = isUnproven
+      ? await this.walletCtx.wallet.balanceUnprovenTransaction(unboundTx, balanceOptions, balanceMeta)
+      : await this.walletCtx.wallet.balanceUnboundTransaction(unboundTx, balanceOptions, balanceMeta);
 
     console.log('[DUSTify Relayer] Transaction balanced into recipe. Finalizing recipe...');
 

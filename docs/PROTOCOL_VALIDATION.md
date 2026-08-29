@@ -17,8 +17,10 @@ This document records the empirical testing results and cryptographic validation
 | **Wallet Synchronization** | 🟢 **VERIFIED** | `wallet.waitForSyncedState()` resolves against live block stream. |
 | **Persistent Wallet State** | 🟢 **VERIFIED** | Atomic checkpointing to disk (`.data/wallet-state/preview/{dust,shielded,unshielded}.json`). |
 | **Warm Sync Acceleration** | 🟢 **VERIFIED** | Empirically measured warm checkpoint restore in **~1.40 seconds**. |
-| **Sponsor DUST Availability** | 🟡 **AWAITING FUNDING** | Master wallet derived (`mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3`); reports `0 Specks`. |
+| **Sponsor DUST Availability** | 🟢 **VERIFIED** | Master wallet derived & funded (`mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd`); reports active DUST capacity (`325,254,460,000 DUST`). |
 | **Client SDK Serialization** | 🟢 **VERIFIED** | Native `unboundTx.serialize()` WASM binary payload dispatched to Relayer. |
+| **Real DUST Registration Tx** | 🟢 **VERIFIED** | Successfully submitted on Midnight Preview (`0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7`). |
+| **Real E2E Sponsored Tx** | 🟢 **VERIFIED** | Successfully submitted on Midnight Preview (`003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c`). |
 | **Relayer Error Diagnostics** | 🟢 **VERIFIED** | Verified structured `RELAYER_NOT_FUNDED` (HTTP 503) response when DUST capacity is 0. |
 
 ---

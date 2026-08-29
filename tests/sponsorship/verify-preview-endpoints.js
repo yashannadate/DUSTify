@@ -4,7 +4,7 @@ import { WebSocket } from 'ws';
 // Polyfill WebSocket
 globalThis.WebSocket = WebSocket;
 
-const INDEXER_HTTP = process.env.INDEXER_HTTP_URL || 'https://api-preview.1am.xyz/api/v4/graphql';
+const INDEXER_HTTP = process.env.INDEXER_HTTP_URL || 'https://indexer.preview.midnight.network/api/v4/graphql';
 const NODE_RPC = process.env.NODE_RPC_URL || 'wss://rpc.preview.midnight.network';
 
 console.log('--- Verifying Midnight Preview Endpoints & SDK Compatibility ---');

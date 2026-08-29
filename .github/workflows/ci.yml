@@ -40,4 +40,4 @@ jobs:
         run: |
           cd relayer-api
           npm install
-          npx tsc --noEmit || true
+          npx tsc --noEmit

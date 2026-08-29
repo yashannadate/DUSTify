@@ -123,9 +123,8 @@ export async function runRealWorldSuite() {
   log('================================================================\n');
 
   // Multi-platform path resolution using pathToFileURL
-  const isWsl = fs.existsSync('/mnt/c');
-  const myAppDir = isWsl ? '/mnt/c/Users/Yash/my-app' : 'C:/Users/Yash/my-app';
-  const zkConfigPath = path.join(myAppDir, 'contracts/managed/hello-world');
+  const currentDir = path.dirname(pathToFileURL(import.meta.url).pathname);
+  const zkConfigPath = path.resolve(process.cwd(), 'contracts/managed/hello-world');
   const contractPath = path.join(zkConfigPath, 'contract/index.js');
   
   const contractUrl = pathToFileURL(contractPath).href;

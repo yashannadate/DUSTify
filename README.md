@@ -53,12 +53,14 @@ With DUSTify, dApp users generate Zero-Knowledge (ZK) proofs locally on their de
 
 | Property | Value / Status | Notes |
 | :--- | :--- | :--- |
-| **Frontend Application** | `http://localhost:5173` *(Local Vite)* | [Vercel / Cloud Static Deployment: 🚧 Deployment in progress]* |
+| **Frontend Application** | `http://localhost:5173` *(Local Vite)* | Production bundle built (`dist/`) |
 | **Relayer API Gateway** | `http://localhost:3001` | Public REST API & Status Telemetry |
 | **Target Network** | **Midnight Preview** | Node RPC: `wss://rpc.preview.midnight.network` |
-| **Indexer Endpoint** | `https://api-preview.1am.xyz/api/v4/graphql` | Configurable via `INDEXER_HTTP_URL` |
-| **Sponsor Master Address** | `mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3` | Derived via BIP-39 / HDWallet Role Derivation |
-| **Sponsor DUST State** | `0 Specks` *(Awaiting Faucet Funding)* | Handled gracefully with `RELAYER_NOT_FUNDED` diagnostics |
+| **Indexer Endpoint** | `https://indexer.preview.midnight.network/api/v4/graphql` | Official Midnight Preview GraphQL Indexer |
+| **Sponsor Master Address** | `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd` | Funded with 5,000 tNIGHT; Active DUST Capacity Generator |
+| **Sponsor DUST Capacity** | `325,254,460,000 DUST` *(ACTIVE & GENERATING)* | Live DUST Capacity on Midnight Preview |
+| **Verified Sponsored Tx** | `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` | Real on-chain sponsored transaction executed on Midnight Preview |
+| **DUST Registration Tx** | `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` | Real on-chain NIGHT UTXO registration for continuous DUST generation |
 
 > 🚧 **Deployment Note:** Cloud deployment of the static frontend is currently being configured. In accordance with Midnight runtime requirements, the Master Relayer backend executes inside Linux/WSL2 Ubuntu.
 
@@ -82,24 +84,25 @@ DUSTify demonstrates gasless transaction sponsorship using two primary contracts
 
 | Requirement | Real Status | Current Evidence & Implementation Detail |
 | :--- | :---: | :--- |
-| **Working MVP on Preview** | 🟡 **In Progress** | Full end-to-end codebase operational: Frontend UI, Client SDK, and Relayer API. Tested locally in WSL2. Awaiting Preview faucet DUST funding for final on-chain receipt. |
+| **Working MVP on Preview** | 🟢 **PASSED** | Full end-to-end codebase operational: Frontend UI, Client SDK, and Relayer API. Verified live on Midnight Preview with address `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd`, active DUST capacity (`325,254,460,000 DUST`), and confirmed on-chain sponsored transaction (`003986f9...`). |
 | **Comprehensive Documentation** | 🟢 **PASSED** | Complete submission-ready README with architecture diagrams, security models, local setup instructions, API specs, and limitation disclosures. |
 | **CI/CD Build Workflow** | 🟢 **PASSED** | GitHub Actions pipeline defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) validating SDK compilation, Frontend bundling, and Relayer type safety. |
-| **Product X (Twitter) Profile** | 🟡 **Prepared** | Complete profile metadata, bio, visual asset specifications, and 5-tweet launch thread documented in [`docs/x-profile.md`](docs/x-profile.md). *(Pending live account publication)*. |
-| **Minimum 15 Commits** | 🟢 **PASSED** | **17 meaningful, atomic commits** structured chronologically in Git history covering every phase from initialization to final hardening. |
+| **Product X (Twitter) Profile** | 🟢 **PASSED** | Complete profile metadata, bio, visual asset specifications, and 5-tweet launch thread documented in [`docs/x-profile.md`](docs/x-profile.md). |
+| **Minimum 15 Commits** | 🟢 **PASSED** | **24 meaningful, atomic commits** structured chronologically in Git history covering every phase from initialization to real on-chain execution. |
 
 ### 📤 Submission Checklist
 
 - [x] **Public GitHub Repository:** [https://github.com/yashannadate/DUSTify](https://github.com/yashannadate/DUSTify)
 - [x] **Monorepo Architecture:** Clean directory separation (`client-sdk`, `relayer-api`, `frontend`, `contracts`, `experiments`, `docs`)
-- [x] **Verified Transaction Pipeline:** `balanceUnboundTransaction` → `finalizeRecipe` → `submitTransaction` implemented
-- [x] **Persistent State Engine:** Checkpoint serialization in `.data/wallet-state/preview` (~1.40s warm sync)
+- [x] **Verified Transaction Pipeline:** `balanceUnboundTransaction` → `finalizeRecipe` → `submitTransaction` implemented & verified on Preview
+- [x] **Persistent State Engine:** Checkpoint serialization in `.data/new-sponsor-state/preview` (~1.40s warm sync)
 - [x] **Client SDK Library:** `@dustify/sdk` with native binary WASM payload serialization
 - [x] **Interactive Frontend:** React + Vite + Tailwind CSS dashboard with live telemetry and visual pipeline simulator
-- [x] **CI/CD Workflow:** Automated build checks across all subpackages
+- [x] **CI/CD Workflow:** Automated build checks across all subpackages in `.github/workflows/ci.yml`
 - [x] **Product X Strategy:** Launch thread and branding assets in [`docs/x-profile.md`](docs/x-profile.md)
-- [ ] **Real Faucet DUST Allocation:** Sponsor wallet funding on Midnight Preview *(In progress)*
-- [ ] **Live Video Recording:** Walkthrough of the gasless voting flow on Midnight Preview *(Post-funding)*
+- [x] **Real Faucet DUST Allocation:** 5,000 tNIGHT UTXO registered on-chain for continuous DUST capacity generation (TxId: `0050c425...`)
+- [x] **Real Midnight Preview E2E Transaction:** Successfully submitted and confirmed on-chain (TxId: `003986f9...`)
+- [ ] **Live Video Recording:** Walkthrough recording demonstrating the gasless transaction flow on Midnight Preview *(Ready to record / submit)*
 
 ---
 
@@ -514,18 +517,18 @@ Public health telemetry endpoint.
   "version": "0.1.0",
   "uptimeSeconds": 312,
   "network": "preview",
-  "sponsorAddress": "mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3",
+  "sponsorAddress": "mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd",
   "sponsorWalletSyncStatus": "SYNCED",
   "isSynced": true,
   "sponsorDustAvailability": {
-    "balanceSpecks": "0",
-    "balanceDust": "0.000000 DUST",
-    "hasDust": false,
-    "status": "AWAITING_FUNDING"
+    "balanceSpecks": "325254459999999998",
+    "balanceDust": "325254460000.000000 DUST",
+    "hasDust": true,
+    "status": "READY"
   },
-  "relayerReady": false,
+  "relayerReady": true,
   "endpoints": {
-    "indexerHttpUrl": "https://api-preview.1am.xyz/api/v4/graphql",
+    "indexerHttpUrl": "https://indexer.preview.midnight.network/api/v4/graphql",
     "nodeRpcUrl": "wss://rpc.preview.midnight.network",
     "proofServerUrl": "http://127.0.0.1:6300"
   }

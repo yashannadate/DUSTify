@@ -18,8 +18,8 @@ export function loadConfig(): RelayerConfig {
   const environment = (process.env.MIDNIGHT_NETWORK || 'preview') as RelayerConfig['environment'];
 
   // Zero Hardcoding: All endpoints are configurable via environment variables with Preview defaults
-  const indexerHttpUrl = process.env.INDEXER_HTTP_URL || 'https://api-preview.1am.xyz/api/v4/graphql';
-  const indexerWsUrl = process.env.INDEXER_WS_URL || 'wss://api-preview.1am.xyz/api/v4/graphql/ws';
+  const indexerHttpUrl = process.env.INDEXER_HTTP_URL || 'https://indexer.preview.midnight.network/api/v4/graphql';
+  const indexerWsUrl = process.env.INDEXER_WS_URL || 'wss://indexer.preview.midnight.network/api/v4/graphql/ws';
   const nodeRpcUrl = process.env.NODE_RPC_URL || 'wss://rpc.preview.midnight.network';
   const proofServerUrl = process.env.PROOF_SERVER_URL || 'http://127.0.0.1:6300';
   
