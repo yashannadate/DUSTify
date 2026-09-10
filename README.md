@@ -176,10 +176,13 @@ DUSTify is submitted under **Level 4: Waxing Gibbous** of the Midnight Moonshots
 - **Serialized `UnboundTransaction` Relay:** Native WASM binary serialization via `@dustify/sdk` over authenticated HTTP.
 - **Atomic Fee Balancing & Signing:** Master Sponsor Wallet balances the user's transaction using `wallet.balanceUnboundTransaction()`.
 - **Transaction Finalization & Submission:** `wallet.finalizeRecipe()` and `wallet.submitTransaction()` broadcasting directly to node RPC.
+- **On-Chain Transaction Verification (`GET /api/v1/tx/:txId`):** Live confirmation status, block height, and timestamp lookup via GraphQL indexer.
+- **Live Capacity & Gas Estimation (`GET /api/v1/estimate`):** Pre-execution DUST fee estimation and transaction capacity buffer.
+- **Relayer Metrics Telemetry (`GET /api/v1/metrics`):** Cumulative analytics on relayed transactions and DUST expenditure.
 - **Persistent State Cache:** Fast warm restore in **~1.40s** (observed benchmark) avoiding full indexer replay.
 - **Relayer Authentication & Abuse Controls:** `x-api-key` header verification, IP sliding-window rate limiting, and origin protection.
-- **Single Level 4 Demo Contract:** Real deployment of [`hello-world.compact`](contracts/src/hello-world.compact) on Midnight Preview.
-- **Interactive React Dashboard:** Real-time telemetry, transaction history, capacity monitor, and developer playground.
+- **Single Level 4 Demo Contract:** Real on-chain deployment of [`hello-world.compact`](contracts/src/hello-world.compact) on Midnight Preview (`ce0b5972...`).
+- **Interactive React Dashboard & Explorer:** Real-time telemetry, transaction history, on-chain lookup explorer, capacity monitor, and developer playground.
 
 ---
 
