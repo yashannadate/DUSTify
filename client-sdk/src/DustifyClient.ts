@@ -44,6 +44,46 @@ export interface RelayerStatusResponse {
   };
 }
 
+export interface TxStatusResponse {
+  status: 'CONFIRMED' | 'SUBMITTED' | 'UNKNOWN';
+  txId: string;
+  hash?: string;
+  blockHeight?: number | null;
+  blockHash?: string | null;
+  blockTimestamp?: string | null;
+  network: string;
+  sponsorAddress?: string | null;
+  sponsoredDustFee?: string;
+  indexerUrl?: string;
+  message?: string;
+  error?: string;
+}
+
+export interface CapacityEstimateResponse {
+  circuitId: string;
+  estimatedDustFee: string;
+  userCost: string;
+  network: string;
+  sponsorAddress: string | null;
+  availableCapacity: string;
+  availableSpecks: string;
+  estimatedTransactionsRemaining: number;
+  status: 'READY' | 'AWAITING_FUNDING';
+  relayerReady: boolean;
+}
+
+export interface RelayerMetricsResponse {
+  service: string;
+  version: string;
+  uptimeSeconds: number;
+  network: string;
+  sponsorAddress: string | null;
+  totalRelayedCount: number;
+  totalSponsoredDust: string;
+  currentDustBalance: string;
+  syncStatus: string;
+}
+
 /**
  * Helper to convert Uint8Array to hex string safely across Node & Browser
  */
@@ -155,6 +195,42 @@ export class DustifyClient {
       }
       throw err;
     }
+  }
+
+  /**
+   * Queries the on-chain confirmation status, block height, and timestamp for a transaction ID
+   */
+  async getTransactionStatus(txId: string): Promise<TxStatusResponse> {
+    const response = await fetch(`${this.relayerUrl}/api/v1/tx/${encodeURIComponent(txId)}`);
+    if (!response.ok) {
+      throw new Error(`[DUSTify SDK] Failed to query transaction status (${response.status})`);
+    }
+    return (await response.json()) as TxStatusResponse;
+  }
+
+  /**
+   * Fetches live capacity estimation and projected sponsored transactions remaining
+   */
+  async getCapacityEstimate(circuitId?: string): Promise<CapacityEstimateResponse> {
+    const url = circuitId
+      ? `${this.relayerUrl}/api/v1/estimate?circuitId=${encodeURIComponent(circuitId)}`
+      : `${this.relayerUrl}/api/v1/estimate`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`[DUSTify SDK] Failed to fetch capacity estimate (${response.status})`);
+    }
+    return (await response.json()) as CapacityEstimateResponse;
+  }
+
+  /**
+   * Fetches operational metrics and cumulative DUST sponsorship analytics
+   */
+  async getMetrics(): Promise<RelayerMetricsResponse> {
+    const response = await fetch(`${this.relayerUrl}/api/v1/metrics`);
+    if (!response.ok) {
+      throw new Error(`[DUSTify SDK] Failed to fetch Relayer metrics (${response.status})`);
+    }
+    return (await response.json()) as RelayerMetricsResponse;
   }
 
   /**
