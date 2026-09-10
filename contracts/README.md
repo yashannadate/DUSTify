@@ -43,3 +43,13 @@ To deploy a compiled contract using the DUSTify deployment script:
 # Execute deployment script
 ./scripts/deploy_preview.sh
 ```
+
+### ✅ Deployed Contract Reference
+
+| Property | Value |
+| :--- | :--- |
+| **Contract Name** | `hello-world.compact` |
+| **Contract Address** | `ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9` |
+| **Deployment TxID** | `00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd` |
+| **Network** | Midnight Preview (`wss://rpc.preview.midnight.network`) |
+| **Fee Settlement** | 100% Sponsored with DUST via DUSTify Relayer |
