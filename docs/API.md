@@ -63,18 +63,18 @@ Public network and relayer health telemetry endpoint.
   "version": "0.1.0",
   "uptimeSeconds": 312,
   "network": "preview",
-  "sponsorAddress": "mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3",
+  "sponsorAddress": "mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd",
   "sponsorWalletSyncStatus": "SYNCED",
   "isSynced": true,
   "sponsorDustAvailability": {
-    "balanceSpecks": "0",
-    "balanceDust": "0.000000 DUST",
-    "hasDust": false,
-    "status": "AWAITING_FUNDING"
+    "balanceSpecks": "25000000000000000000",
+    "balanceDust": "25000000000000.000000 DUST",
+    "hasDust": true,
+    "status": "READY"
   },
-  "relayerReady": false,
+  "relayerReady": true,
   "endpoints": {
-    "indexerHttpUrl": "https://api-preview.1am.xyz/api/v4/graphql",
+    "indexerHttpUrl": "https://indexer.preview.midnight.network/api/v4/graphql",
     "nodeRpcUrl": "wss://rpc.preview.midnight.network",
     "proofServerUrl": "http://127.0.0.1:6300"
   }
