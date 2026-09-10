@@ -12,14 +12,14 @@ Navigate to **[http://localhost:5173](http://localhost:5173)** in your browser.
 ### 2. Verify Real-Time Telemetry
 - Inspect the top-right navbar indicator: confirms network **`preview`** and Relayer connectivity.
 - Navigate to the **"Relayer & Telemetry"** tab:
-  - View the Sponsor Master Wallet address: `mn_addr_preview1w2fl37n2zk5chc95z4ngzmjl6lzdwcxq7yjd45jpn3amakdrehzsrhc7v3`.
+  - View the Sponsor Master Wallet address: `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd`.
   - Click **"Ping GET /api/v1/status"** to verify roundtrip latency in real-time.
 
 ### 3. Execute Gasless Transactions
 Navigate to the **"Gasless Demo"** tab:
 
 #### Demo A: Public Message Storage (`hello-world.compact`)
-1. Select `hello-world.compact`.
+1. Select `hello-world.compact` (Deployed at `ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9`).
 2. Enter your custom message: `Hello Midnight Preview from DUSTify`.
 3. Notice **User Gas Fee:** `0 DUST (Free)`.
 4. Click **"Submit Gasless Transaction"**.
