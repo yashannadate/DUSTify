@@ -181,13 +181,6 @@ DUSTify is submitted under **Level 4: Waxing Gibbous** of the Midnight Moonshots
 - **Single Level 4 Demo Contract:** Real deployment of [`hello-world.compact`](contracts/src/hello-world.compact) on Midnight Preview.
 - **Interactive React Dashboard:** Real-time telemetry, transaction history, capacity monitor, and developer playground.
 
-### 🔮 What IS NOT Included in Level 4 (Future Roadmap):
-- **Production Mainnet Deployment:** System is configured and validated exclusively on Midnight Preview.
-- **Decentralized Relayer Network (DRN):** Current implementation uses a single authoritative Master Relayer instance.
-- **Multi-Tenant Billing & Metering:** Level 4 uses a single server-side `DUSTIFY_API_KEY` secret. Multi-tenant database key isolation and per-dApp billing quotas are part of the Level 5 roadmap.
-- **Audited Production Security:** Not yet audited by third-party cryptographic security firms.
-- **Cross-Chain Gas Payments:** Future phase will allow users to pay sponsorship fees in ADA/stablecoins.
-
 ---
 
 ## 🔌 API Usage & Client SDK Guide
@@ -218,7 +211,7 @@ const unboundTx = await proofProvider.proveTx(unprovenTx);
 // 3. One-line gas sponsorship and on-chain submission
 const receipt = await dustify.sponsorAndSubmit(unboundTx, {
   circuitId: 'storeMessage',
-  contractAddress: 'f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5',
+  contractAddress: 'ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9',
 });
 
 if (receipt.status === 'SUBMITTED') {
@@ -280,7 +273,7 @@ Authenticated transaction sponsorship endpoint.
 {
   "payloadHex": "00112233445566778899aabbccddeeff...",
   "circuitId": "storeMessage",
-  "contractAddress": "f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5"
+  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9"
 }
 ```
 
@@ -290,7 +283,7 @@ Authenticated transaction sponsorship endpoint.
   "status": "SUBMITTED",
   "txId": "003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c",
   "circuitId": "storeMessage",
-  "contractAddress": "f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5",
+  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9",
   "sponsoredDustFee": "0.0042 DUST",
   "timestamp": 1724698000000
 }
@@ -340,8 +333,8 @@ DUSTify is verified and operational on the **Midnight Preview Network**:
 | Property | Value / Identifier | Notes |
 | :--- | :--- | :--- |
 | **Deployed Contract** | `hello-world.compact` | Single Level 4 demonstration contract |
-| **Contract Address** | `f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5` | Deployed on Midnight Preview |
-| **Contract Deployment TxID** | `00b65b18a36dc18030e1c5c8173dccf18e492a12005a1f9e293111a028d8e0c620` | Real on-chain deployment transaction |
+| **Contract Address** | `ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9` | Deployed on Midnight Preview |
+| **Contract Deployment TxID** | `00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd` | Real on-chain deployment transaction |
 | **Master Sponsor Address** | `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd` | Funded with 5,000 tNIGHT; Active DUST Capacity Generator |
 | **DUST Registration TxID** | `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` | Real on-chain NIGHT UTXO registration for continuous DUST generation |
 | **Verified Sponsored TxID** | `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` | Real on-chain sponsored transaction (0 DUST paid by end user) |
@@ -392,45 +385,13 @@ In the interest of technical integrity and transparency:
 
 ---
 
-## 📊 Roadmap (Moonshot Phases)
-
-### 🌔 Level 4 — Waxing Gibbous (Current Phase)
-- [x] Verified Midnight Preview RPC & Indexer connectivity
-- [x] Implemented `balanceUnboundTransaction` → `finalizeRecipe` → `submitTransaction` pipeline
-- [x] Implemented atomic wallet state persistence (~1.40s warm sync observed benchmark)
-- [x] Built authenticated Relayer API with rate limiting and health telemetry
-- [x] Built `@dustify/sdk` with native binary WASM serialization
-- [x] Built React + Vite + Tailwind developer dashboard & execution simulator
-- [x] Configured GitHub Actions CI workflow
-- [x] Prepared Product X (Twitter) profile & launch thread ([@dustifymidnight](https://x.com/dustifymidnight))
-- [x] 25 atomic, chronological Git commits on `main`
-- [x] Complete Preview faucet tNIGHT funding & DUST UTXO registration (TxID: `0050c425...`)
-- [x] Executed real on-chain sponsored transaction on Midnight Preview (TxID: `003986f9...`)
-- [x] Deployed `hello-world.compact` contract on Midnight Preview (`f4578842...`, TxID: `00b65b18...`)
-- [x] Recorded demonstration video walkthrough on Midnight Preview
-
-### 🌕 Level 5 — Full Moon
-- [ ] Publish `@dustify/sdk` to npm registry
-- [ ] Multi-tenant API key management with database-backed key isolation
-- [ ] Self-service API key rotation and organization quota policies
-- [ ] Multi-tenant sponsor pool with dynamic DUST replenishment alerts
-- [ ] Integration with leading Midnight ecosystem dApps
-
-### 🌝 Level 6 — Supermoon
-- [ ] Decentralized Relayer Network (DRN) with stake-based slashing
-- [ ] Mainnet deployment and third-party smart contract audit
-- [ ] Cross-chain gas sponsorship (pay fees in ADA/USDC, sponsor in DUST)
-- [ ] Enterprise SLA relayer infrastructure
-
----
-
 ## 📄 Level 4 Reviewer Evidence Matrix
 
 | Deliverable | Location in Repository | Verification Command / Evidence |
 | :--- | :--- | :--- |
 | **Monorepo Codebase** | Root Workspace | [GitHub Repository](https://github.com/yashannadate/DUSTify) |
 | **Proposal Document** | [`PROPOSAL.md`](PROPOSAL.md) | Level 4 Moonshot Proposal |
-| **Contract Deployment** | [`contracts/src/hello-world.compact`](contracts/src/hello-world.compact) | Address: `f45788421286077129e4971bb48bdb9b71aa502a1f1288a67dc42667a75354d5`<br>TxID: `00b65b18a36dc18030e1c5c8173dccf18e492a12005a1f9e293111a028d8e0c620` |
+| **Contract Deployment** | [`contracts/src/hello-world.compact`](contracts/src/hello-world.compact) | Address: `ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9`<br>TxID: `00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd` |
 | **Sponsored Tx On-Chain** | [`scripts/test_user_sponsor_flow.ts`](scripts/test_user_sponsor_flow.ts) | TxID: `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` (0 DUST user cost) |
 | **DUST Registration Tx** | [`scripts/register_dust.ts`](scripts/register_dust.ts) | TxID: `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` (5,000 tNIGHT UTXO) |
 | **Relayer Backend** | [`relayer-api/src/`](relayer-api/src) | `npm run dev:relayer` (Port 3001) |

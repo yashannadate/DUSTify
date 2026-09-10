@@ -1,7 +1,7 @@
 import '../relayer-api/src/polyfills.js';
 
 import * as path from 'path';
-import { CompiledContract } from '@midnight-ntwrk/compact-js';
+import { CompiledContract } from '@midnight-ntwrk/midnight-js-protocol/compact-js';
 import { NodeZkConfigProvider } from '@midnight-ntwrk/midnight-js-node-zk-config-provider';
 import { createUnprovenDeployTx } from '@midnight-ntwrk/midnight-js-contracts';
 import { MidnightSponsorService } from '../relayer-api/src/services/midnight.js';
@@ -20,20 +20,45 @@ async function main() {
   const sponsor = new MidnightSponsorService(config);
   await sponsor.initialize();
 
-  const status = await sponsor.getStatus();
-  console.log('\n--- SPONSOR WALLET STATUS ---');
-  console.log('Sponsor Address:', status.sponsorAddress);
-  console.log('DUST Balance:   ', status.sponsorDustAvailability.balanceDust, `(${status.sponsorDustAvailability.balanceSpecks} Specks)`);
-  console.log('Sync Status:    ', status.sponsorWalletSyncStatus);
-
-  if (!status.sponsorDustAvailability.hasDust) {
-    throw new Error('Sponsor wallet has 0 DUST! Cannot pay contract deployment fee.');
-  }
-
   const walletCtx = (sponsor as any).walletCtx;
   const wallet = walletCtx.wallet;
   const shieldedSecretKeys = walletCtx.shieldedSecretKeys;
   const dustSecretKey = walletCtx.dustSecretKey;
+
+  console.log('Waiting for wallet synchronization with Midnight Indexer...');
+  const syncedState = await wallet.waitForSyncedState();
+  const now = new Date();
+  const dustBalanceSpecks = syncedState.dust ? syncedState.dust.balance(now) : 0n;
+  const dustBalanceDisplay = (Number(dustBalanceSpecks) / 1_000_000).toFixed(6) + ' DUST';
+
+  console.log('\n--- SPONSOR WALLET STATUS ---');
+  console.log('Sponsor Address:', sponsor.getSponsorAddress());
+  console.log('DUST Balance:   ', dustBalanceDisplay, `(${dustBalanceSpecks} Specks)`);
+
+  const unshieldedCoins = syncedState.unshielded?.availableCoins 
+    ? Array.from(syncedState.unshielded.availableCoins) 
+    : [];
+  console.log(`Unshielded Coins: ${unshieldedCoins.length}`);
+
+  if (dustBalanceSpecks === 0n) {
+    if (unshieldedCoins.length > 0) {
+      console.log('Sponsor wallet has NIGHT UTXOs that need DUST registration. Registering now...');
+      const unshieldedKeystore = walletCtx.unshieldedKeystore;
+      const signDustRegistration = (payload: Uint8Array) => unshieldedKeystore.signData(payload);
+      const registrationRecipe = await wallet.registerNightUtxosForDustGeneration(
+        unshieldedCoins as any,
+        unshieldedKeystore.getPublicKey(),
+        signDustRegistration
+      );
+      const finalizedRegistrationTx = await wallet.finalizeRecipe(registrationRecipe);
+      const regTxId = await wallet.submitTransaction(finalizedRegistrationTx);
+      console.log(`✅ Registered NIGHT UTXOs for DUST! TxId: ${regTxId}`);
+      console.log('Waiting for block inclusion...');
+      await new Promise((resolve) => setTimeout(resolve, 15000));
+    } else {
+      throw new Error(`Sponsor wallet (${sponsor.getSponsorAddress()}) has 0 DUST! Cannot pay contract deployment fee.`);
+    }
+  }
 
   const coinPublicKey = shieldedSecretKeys.coinPublicKey;
   const encPublicKey = shieldedSecretKeys.encryptionPublicKey;
@@ -100,7 +125,7 @@ async function main() {
   console.log('Contract Address:  ', contractAddress);
   console.log('Deployment TxId:   ', txId);
   console.log('Network:            Midnight Preview (wss://rpc.preview.midnight.network)');
-  console.log('Sponsor:           ', status.sponsorAddress);
+  console.log('Sponsor:           ', sponsor.getSponsorAddress());
   console.log('================================================================');
 
   await (sponsor as any).savePersistedState(wallet);
