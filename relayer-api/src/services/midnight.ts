@@ -65,6 +65,8 @@ export class MidnightSponsorService {
   private syncStatus: 'INITIALIZING' | 'SYNCING' | 'SYNCED' | 'ERROR' = 'INITIALIZING';
   private sponsorAddress: string | null = null;
   private lastKnownDustBalance = 0n;
+  private relayedTxCount = 0;
+  private totalSponsoredDustSpecks = 0n;
 
   constructor(config: RelayerConfig) {
     this.config = config;
@@ -362,6 +364,9 @@ export class MidnightSponsorService {
 
     console.log(`[DUSTify Relayer] Transaction successfully submitted on-chain! TxId: ${txId}`);
 
+    this.relayedTxCount++;
+    this.totalSponsoredDustSpecks += 4200n;
+
     // Update persisted state after spending
     this.savePersistedState(this.walletCtx.wallet).catch(() => {});
 
@@ -372,4 +377,98 @@ export class MidnightSponsorService {
       timestamp: Date.now(),
     };
   }
+
+  async queryTransaction(txId: string) {
+    const cleanHash = txId.startsWith('00') ? txId.slice(2) : txId;
+    const txQuery = `
+      query GetTx($hash: String!) {
+        transactions(offset: { hash: $hash }, limit: 1) {
+          hash
+          id
+          block {
+            height
+            hash
+            timestamp
+          }
+        }
+      }
+    `;
+
+    try {
+      const res = await fetch(this.config.indexerHttpUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: txQuery, variables: { hash: cleanHash } }),
+      });
+
+      const json: any = await res.json();
+      const tx = json?.data?.transactions?.[0];
+
+      if (tx) {
+        return {
+          status: 'CONFIRMED',
+          txId,
+          hash: tx.hash,
+          blockHeight: tx.block?.height ?? null,
+          blockHash: tx.block?.hash ?? null,
+          blockTimestamp: tx.block?.timestamp ?? null,
+          network: this.config.environment,
+          sponsorAddress: this.sponsorAddress,
+          sponsoredDustFee: '0.0042 DUST',
+          indexerUrl: this.config.indexerHttpUrl,
+        };
+      }
+
+      return {
+        status: 'SUBMITTED',
+        txId,
+        message: 'Transaction broadcast to node RPC. Awaiting block inclusion by indexer stream.',
+        network: this.config.environment,
+        sponsorAddress: this.sponsorAddress,
+        indexerUrl: this.config.indexerHttpUrl,
+      };
+    } catch (err: any) {
+      return {
+        status: 'UNKNOWN',
+        txId,
+        error: err.message,
+        network: this.config.environment,
+      };
+    }
+  }
+
+  async getCapacityEstimate(circuitId?: string) {
+    const status = await this.getStatus();
+    const feeSpecks = 4200n;
+    const dustBal = this.lastKnownDustBalance;
+    const maxTx = feeSpecks > 0n ? Number(dustBal / feeSpecks) : 0;
+
+    return {
+      circuitId: circuitId || 'storeMessage',
+      estimatedDustFee: '0.0042 DUST',
+      userCost: '0 DUST (Gasless)',
+      network: this.config.environment,
+      sponsorAddress: this.sponsorAddress,
+      availableCapacity: status.sponsorDustAvailability.balanceDust,
+      availableSpecks: status.sponsorDustAvailability.balanceSpecks,
+      estimatedTransactionsRemaining: maxTx,
+      status: status.sponsorDustAvailability.status,
+      relayerReady: status.relayerReady,
+    };
+  }
+
+  getMetrics() {
+    return {
+      service: 'DUSTify Relayer API',
+      version: '0.1.0',
+      uptimeSeconds: Math.floor(process.uptime()),
+      network: this.config.environment,
+      sponsorAddress: this.sponsorAddress,
+      totalRelayedCount: this.relayedTxCount,
+      totalSponsoredDust: (Number(this.totalSponsoredDustSpecks) / 1_000_000).toFixed(6) + ' DUST',
+      currentDustBalance: (Number(this.lastKnownDustBalance) / 1_000_000).toFixed(6) + ' DUST',
+      syncStatus: this.syncStatus,
+    };
+  }
 }
+

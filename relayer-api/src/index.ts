@@ -53,6 +53,9 @@ app.get('/', (req, res) => {
     docs: 'https://github.com/yashannadate/DUSTify',
     endpoints: {
       status: 'GET /api/v1/status',
+      estimate: 'GET /api/v1/estimate?circuitId=storeMessage',
+      transaction: 'GET /api/v1/tx/:txId',
+      metrics: 'GET /api/v1/metrics',
       relay: 'POST /api/v1/relay (Requires x-api-key)',
       health: 'GET /health',
     },
@@ -69,6 +72,42 @@ app.get('/api/v1/status', async (req, res) => {
   try {
     const status = await sponsorService.getStatus();
     res.json(status);
+  } catch (err: any) {
+    res.status(500).json({ error: 'INTERNAL_ERROR', message: err.message });
+  }
+});
+
+// Live Capacity & Fee Estimate Endpoint
+app.get('/api/v1/estimate', async (req, res) => {
+  try {
+    const circuitId = req.query.circuitId as string | undefined;
+    const estimate = await sponsorService.getCapacityEstimate(circuitId);
+    res.json(estimate);
+  } catch (err: any) {
+    res.status(500).json({ error: 'INTERNAL_ERROR', message: err.message });
+  }
+});
+
+// On-Chain Transaction Lookup Endpoint
+app.get('/api/v1/tx/:txId', async (req, res) => {
+  try {
+    const txId = req.params.txId;
+    if (!txId) {
+      res.status(400).json({ error: 'INVALID_TX_ID', message: 'Transaction ID parameter is required' });
+      return;
+    }
+    const result = await sponsorService.queryTransaction(txId);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: 'INTERNAL_ERROR', message: err.message });
+  }
+});
+
+// Relayer Operational Metrics Telemetry Endpoint
+app.get('/api/v1/metrics', (req, res) => {
+  try {
+    const metrics = sponsorService.getMetrics();
+    res.json(metrics);
   } catch (err: any) {
     res.status(500).json({ error: 'INTERNAL_ERROR', message: err.message });
   }
