@@ -5,13 +5,14 @@ echo "=================================================================="
 echo "🚀 DUSTify Midnight Preview Contract Deployment Script"
 echo "=================================================================="
 echo "Target Network: Midnight Preview"
-echo "Indexer GraphQL: https://api-preview.1am.xyz/api/v4/graphql"
+echo "Indexer GraphQL: https://indexer.preview.midnight.network/api/v4/graphql"
 echo "Node RPC:       wss://rpc.preview.midnight.network"
+echo "Proof Server:   http://127.0.0.1:6300"
 echo "=================================================================="
 
-# Check for sponsor wallet balance
-echo "Checking Sponsor Wallet DUST Capacity..."
+# Execute the TypeScript on-chain contract deployment
+echo "Deploying hello-world.compact to Midnight Preview..."
 cd /mnt/d/DUSTify
-npx tsx tests/integration/test-relayer-endpoints.ts
+npx tsx scripts/deploy_contract.ts
 
-echo "Ready to broadcast contract deployment transaction on Midnight Preview."
+echo "✅ Deployment pipeline completed."
