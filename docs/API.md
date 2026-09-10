@@ -81,6 +81,61 @@ Public network and relayer health telemetry endpoint.
 }
 ```
 
+### `GET /api/v1/estimate`
+Pre-execution gas & capacity estimation endpoint.
+
+**Query Parameters:**
+- `circuitId` (optional): Name of the circuit to estimate (e.g. `storeMessage`).
+
+**Response (200 OK):**
+```json
+{
+  "circuitId": "storeMessage",
+  "estimatedDustFee": "0.0042 DUST",
+  "userCost": "0 DUST (Gasless)",
+  "network": "preview",
+  "sponsorAddress": "mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd",
+  "availableCapacity": "25,000,000,000,000.00 DUST",
+  "availableSpecks": "25000000000000000000",
+  "estimatedTransactionsRemaining": 5952380,
+  "status": "READY",
+  "relayerReady": true
+}
+```
+
+### `GET /api/v1/tx/:txId`
+On-chain transaction status and block confirmation lookup.
+
+**Response (200 OK):**
+```json
+{
+  "status": "CONFIRMED",
+  "txId": "00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd",
+  "network": "preview",
+  "sponsorAddress": "mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd",
+  "sponsoredDustFee": "0.0042 DUST",
+  "indexerUrl": "https://indexer.preview.midnight.network/api/v4/graphql"
+}
+```
+
+### `GET /api/v1/metrics`
+Relayer operational metrics and cumulative sponsorship analytics.
+
+**Response (200 OK):**
+```json
+{
+  "service": "DUSTify Relayer API",
+  "version": "0.1.0",
+  "uptimeSeconds": 1420,
+  "network": "preview",
+  "sponsorAddress": "mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd",
+  "totalRelayedCount": 42,
+  "totalSponsoredDust": "0.176400 DUST",
+  "currentDustBalance": "25000000000000.000000 DUST",
+  "syncStatus": "SYNCED"
+}
+```
+
 ### `POST /api/v1/relay`
 Authenticated transaction sponsorship submission endpoint.
 
@@ -93,17 +148,19 @@ Authenticated transaction sponsorship submission endpoint.
 {
   "payloadHex": "00112233445566778899aabbccddeeff...",
   "circuitId": "storeMessage",
-  "contractAddress": "optional_contract_address"
+  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9"
 }
 ```
 
 **Success Response (200 OK):**
 ```json
 {
-  "status": "CONFIRMED",
-  "txId": "0a1b2c3d4e5f6789...",
+  "status": "SUBMITTED",
+  "txId": "003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c",
   "circuitId": "storeMessage",
+  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9",
   "sponsoredDustFee": "0.0042 DUST",
   "timestamp": 1724698000000
 }
 ```
+

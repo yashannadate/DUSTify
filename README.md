@@ -222,12 +222,22 @@ if (receipt.status === 'SUBMITTED') {
 }
 ```
 
-### 3. Query Relayer Health & Sync Status
+### 3. Query Health, Capacity & Transaction Status via SDK
 ```typescript
+// 1. Health & Status
 const status = await dustify.getStatus();
 console.log('Relayer Network:', status.network);
-console.log('Sponsor Sync Status:', status.sponsorWalletSyncStatus);
 console.log('Available DUST:', status.sponsorDustAvailability.balanceDust);
+
+// 2. Pre-execution Capacity Estimation
+const estimate = await dustify.getCapacityEstimate('storeMessage');
+console.log('Estimated DUST Fee:', estimate.estimatedDustFee);
+console.log('Remaining Sponsored Txs:', estimate.estimatedTransactionsRemaining);
+
+// 3. On-Chain Transaction Verification
+const tx = await dustify.getTransactionStatus('00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd');
+console.log('Confirmation Status:', tx.status);
+console.log('Block Height:', tx.blockHeight);
 ```
 
 ### 4. REST API Specification
@@ -235,7 +245,16 @@ console.log('Available DUST:', status.sponsorDustAvailability.balanceDust);
 #### `GET /api/v1/status`
 Public health telemetry endpoint. Returns current sync state and live DUST capacity.
 
-**Response `(200 OK)`:**
+#### `GET /api/v1/estimate`
+Live gas and capacity estimation endpoint returning available sponsor capacity and remaining transaction buffer.
+
+#### `GET /api/v1/tx/:txId`
+On-chain transaction status query resolving against the Midnight Preview GraphQL indexer.
+
+#### `GET /api/v1/metrics`
+Cumulative sponsorship analytics, total transactions relayed, and DUST token expenditure.
+
+**Status Response `(200 OK)`:**
 ```json
 {
   "service": "DUSTify Relayer API",
@@ -246,8 +265,8 @@ Public health telemetry endpoint. Returns current sync state and live DUST capac
   "sponsorWalletSyncStatus": "SYNCED",
   "isSynced": true,
   "sponsorDustAvailability": {
-    "balanceSpecks": "575361889999999997",
-    "balanceDust": "575361890000.000000 DUST",
+    "balanceSpecks": "25000000000000000000",
+    "balanceDust": "25000000000000.000000 DUST",
     "hasDust": true,
     "status": "READY"
   },
