@@ -33,9 +33,8 @@ DUSTify enables Midnight dApps to sponsor transaction fees for users. Users gene
 9. [🌐 Preview Deployment Details](#-preview-deployment-details)
 10. [🧪 Testing & Verification](#-testing--verification)
 11. [⚠️ Current Limitations & Technical Honesty](#-current-limitations--technical-honesty)
-12. [📊 Roadmap (Moonshot Phases)](#-roadmap-moonshot-phases)
-13. [📄 Level 4 Reviewer Evidence Matrix](#-level-4-reviewer-evidence-matrix)
-14. [📜 License & Acknowledgments](#-license--acknowledgments)
+12. [📄 Level 4 Reviewer Evidence Matrix](#-level-4-reviewer-evidence-matrix)
+13. [📜 License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
