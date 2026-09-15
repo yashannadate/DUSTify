@@ -6,12 +6,10 @@ import { NodeZkConfigProvider } from '@midnight-ntwrk/midnight-js-node-zk-config
 import { createUnprovenDeployTx } from '@midnight-ntwrk/midnight-js-contracts';
 import { MidnightSponsorService } from '../relayer-api/src/services/midnight.js';
 import { loadConfig } from '../relayer-api/src/config.js';
-// @ts-expect-error hello-world contract module
-import { Contract } from '../contracts/managed/hello-world/contract/index.js';
 
 async function main() {
   console.log('================================================================');
-  console.log('🚀 Deploying hello-world.compact to Midnight Preview');
+  console.log('🚀 Deploying Dustify.compact to Midnight Preview');
   console.log('================================================================');
 
   // 1. Initialize Sponsor Service with existing configuration & funded wallet
@@ -64,13 +62,30 @@ async function main() {
   const encPublicKey = shieldedSecretKeys.encryptionPublicKey;
 
   // 2. Prepare Contract & ZK Providers
-  console.log('\n2. Loading compiled contract & ZK configuration...');
-  const zkConfigPath = path.resolve(process.cwd(), 'contracts', 'managed', 'hello-world');
+  console.log('\n2. Loading compiled Dustify contract & ZK configuration...');
+  const zkConfigPath = path.resolve(process.cwd(), 'contracts', 'managed', 'dustify');
   console.log('ZK Artifacts Directory:', zkConfigPath);
   const zkConfigProvider = new NodeZkConfigProvider(zkConfigPath);
 
+  const contractModulePath = path.join(zkConfigPath, 'contract', 'index.js');
+  const contractModule = await import(`file://${contractModulePath}`);
+
+  const defaultWitnesses = {
+    getRelayerSecret: (context: any) => [context.privateState, new Uint8Array(32)],
+    getUserSecret: (context: any) => [context.privateState, new Uint8Array(32)],
+  };
+
+  class DeployContract extends contractModule.Contract {
+    constructor(witnesses: any = {}) {
+      super({
+        ...defaultWitnesses,
+        ...(witnesses || {}),
+      });
+    }
+  }
+
   const compiledContract = CompiledContract.withVacantWitnesses(
-    CompiledContract.make('hello-world', Contract)
+    CompiledContract.make('Dustify', DeployContract as any)
   );
 
   const mockWalletProvider = {
@@ -119,9 +134,9 @@ async function main() {
   const txId = await wallet.submitTransaction(finalizedTx);
 
   console.log('\n================================================================');
-  console.log('🎉 CONTRACT DEPLOYED ON MIDNIGHT PREVIEW!');
+  console.log('🎉 DUSTIFY CONTRACT DEPLOYED ON MIDNIGHT PREVIEW!');
   console.log('================================================================');
-  console.log('Contract Name:      hello-world.compact');
+  console.log('Contract Name:      Dustify.compact');
   console.log('Contract Address:  ', contractAddress);
   console.log('Deployment TxId:   ', txId);
   console.log('Network:            Midnight Preview (wss://rpc.preview.midnight.network)');

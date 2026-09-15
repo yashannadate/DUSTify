@@ -62,8 +62,7 @@ Confirmed On-Chain Settlement (TxId)
 
 - [x] **Relayer API Gateway:** Express + Node.js service with atomic disk state persistence (~1.40s warm sync) in `.data/wallet-state/preview/`.
 - [x] **Client SDK Library:** `@dustify/sdk` with native binary serialization.
-- [x] **Developer Dashboard:** React + Vite + Tailwind CSS dashboard with real-time telemetry and 5-stage interactive execution simulator on `hello-world.compact` and `Voting.compact`.
-- [x] **Smart Contracts:** Compact contracts for registry (`DustifyRegistry.compact`), voting (`Voting.compact`), and public message storage (`hello-world.compact`).
+- [x] **Smart Contract:** Unified Compact smart contract (`Dustify.compact`) providing paymaster quota enforcement, relayer whitelist verification, anti-sybil nullifiers, and public message storage disclosures.
 - [x] **CI/CD Pipeline:** Automated GitHub Actions build workflow (`.github/workflows/ci.yml`).
 - [x] **Comprehensive Documentation:** Architecture, security model, API specs, setup guides, and Product X launch profile.
 

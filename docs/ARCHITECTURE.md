@@ -10,7 +10,9 @@ This document provides a comprehensive technical breakdown of **DUSTify**, the z
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        FRONTEND / CLIENT APPLICATION                   │
 │  React 18 + Vite 5 + Tailwind CSS (Monochrome Dark Minimalist)         │
+│  • Paymaster Registry Simulator (DustifyRegistry.compact)              │
 │  • Governance Voting Simulator (Voting.compact)                        │
+│  • Atomic State Machine Simulator (Counter.compact)                    │
 │  • Public Message Storage Simulator (hello-world.compact)              │
 │  • Real-Time Preview Telemetry & Endpoint Health Monitor               │
 └───────────────────────────────────┬────────────────────────────────────┘

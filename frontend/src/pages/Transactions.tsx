@@ -131,12 +131,12 @@ export const Transactions: React.FC<TransactionsProps> = ({ transactions }) => {
           <span className="text-[11px] text-zinc-400">Verified On-Chain Proofs:</span>
           <button
             onClick={() => {
-              setSearchTxId('00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd');
-              handleQueryTx('00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd');
+              setSearchTxId('0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9');
+              handleQueryTx('0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9');
             }}
             className="px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/80 text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
           >
-            🚀 Deployed Contract (ce0b5972...)
+            🚀 Dustify.compact (47d3df8c...)
           </button>
           <button
             onClick={() => {

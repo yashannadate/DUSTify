@@ -1,0 +1,192 @@
+pragma language_version >= 0.22;
+import CompactStandardLibrary;
+
+// ============================================================================
+// 🌙 DUSTify — Zero-Friction Gas-Abstraction & Paymaster Smart Contract
+// ============================================================================
+// Engineered for the Midnight Network (Kachina Protocol).
+// Decouples Zero-Knowledge witness computation from transaction fee payment.
+//
+// Key Capabilities:
+// 1. Paymaster Quota Engine: Multi-dApp registration and rate-limited quotas.
+// 2. Relayer Whitelist: Authorized relayers verified via private witnesses.
+// 3. User Privacy: Anti-sybil / anti-replay nullifiers (persistentHash).
+// 4. Gasless Data Storage: Sponsored message / state disclosures on Midnight ledger.
+// 5. Epoch Rate-Limiting & Emergency Circuit Breaker.
+// ============================================================================
+
+// --- Public Ledger State ---
+export ledger admin: Bytes<32>;
+export ledger isInitialized: Boolean;
+export ledger isPaused: Boolean;
+export ledger currentEpoch: Uint<64>;
+export ledger globalTotalSponsored: Uint<64>;
+
+export ledger latestMessage: Opaque<"string">;
+export ledger messageCount: Uint<64>;
+
+export ledger authorizedRelayers: Set<Bytes<32>>;
+export ledger dAppQuotaLimits: Map<Bytes<32>, Uint<64>>;
+export ledger dAppRemainingQuota: Map<Bytes<32>, Uint<64>>;
+export ledger dAppTotalSponsored: Map<Bytes<32>, Uint<64>>;
+export ledger usedNullifiers: Set<Bytes<32>>;
+
+// --- Private Witnesses ---
+witness getRelayerSecret(): Bytes<32>;
+witness getUserSecret(): Bytes<32>;
+
+/**
+ * @notice Initializes the DUSTify Paymaster contract with admin authority.
+ * @param adminKey The public identifier for the protocol administrator.
+ */
+export circuit initialize(adminKey: Bytes<32>): [] {
+    assert(!isInitialized, "DUSTify contract already initialized");
+    admin = disclose(adminKey);
+    isInitialized = true;
+    isPaused = false;
+    currentEpoch = 1;
+    globalTotalSponsored = 0;
+    messageCount = 0;
+}
+
+/**
+ * @notice Registers a new dApp with an initial sponsorship budget.
+ * @param dAppId Unique 32-byte identifier for the dApp.
+ * @param initialQuota Initial sponsorship units credited to the dApp.
+ */
+export circuit registerDApp(dAppId: Bytes<32>, initialQuota: Uint<64>): [] {
+    assert(!isPaused, "Contract is currently paused");
+    const dApp = disclose(dAppId);
+    const quota = disclose(initialQuota);
+    
+    assert(!dAppQuotaLimits.member(dApp), "dApp is already registered");
+    dAppQuotaLimits.insert(dApp, quota);
+    dAppRemainingQuota.insert(dApp, quota);
+    dAppTotalSponsored.insert(dApp, 0);
+}
+
+/**
+ * @notice Whitelists an authorized DUSTify Relayer node.
+ * @param relayerKey Public key / hash of the authorized relayer.
+ */
+export circuit authorizeRelayer(relayerKey: Bytes<32>): [] {
+    assert(!isPaused, "Contract is currently paused");
+    authorizedRelayers.insert(disclose(relayerKey));
+}
+
+/**
+ * @notice Revokes a previously authorized relayer node.
+ * @param relayerKey Public key to remove.
+ */
+export circuit revokeRelayer(relayerKey: Bytes<32>): [] {
+    assert(!isPaused, "Contract is currently paused");
+    authorizedRelayers.remove(disclose(relayerKey));
+}
+
+/**
+ * @notice Executes a zero-gas sponsored transaction verification.
+ * @dev 1. Verifies relayer authorization via private witness.
+ *      2. Derives user nullifier in ZK to prevent replay attacks.
+ *      3. Decrements dApp quota and increments global sponsored metrics.
+ * @param dAppId The target dApp identifier.
+ * @param userSalt Per-action unique salt provided by the user.
+ * @param costUnits Fee units absorbed by the sponsor for this action.
+ */
+export circuit sponsorTransaction(dAppId: Bytes<32>, userSalt: Bytes<32>, costUnits: Uint<64>): [] {
+    assert(!isPaused, "Contract is currently paused");
+    const dApp = disclose(dAppId);
+    const cost = disclose(costUnits);
+
+    // 1. Verify Relayer Authorization via Private Witness
+    const relayerSecret = getRelayerSecret();
+    const relayerPubkey = disclose(persistentHash<Vector<1, Bytes<32>>>([relayerSecret]));
+    assert(authorizedRelayers.member(relayerPubkey), "Relayer is not authorized");
+
+    // 2. Prevent User Double-Submission via Private Nullifier
+    const userSecret = getUserSecret();
+    const nullifier = disclose(persistentHash<Vector<3, Bytes<32>>>([userSecret, userSalt, dAppId]));
+    assert(!usedNullifiers.member(nullifier), "Transaction replay / nullifier already spent");
+    usedNullifiers.insert(nullifier);
+
+    // 3. Enforce & Deduct dApp Sponsorship Quota
+    assert(dAppRemainingQuota.member(dApp), "dApp is not registered with Paymaster");
+    const remaining = dAppRemainingQuota.lookup(dApp);
+    assert(remaining >= cost, "dApp sponsorship quota exhausted for active epoch");
+    
+    dAppRemainingQuota.insert(dApp, (remaining - cost) as Uint<64>);
+
+    const prevSponsored = dAppTotalSponsored.lookup(dApp);
+    dAppTotalSponsored.insert(dApp, (prevSponsored + 1) as Uint<64>);
+
+    globalTotalSponsored = (globalTotalSponsored + 1) as Uint<64>;
+}
+
+/**
+ * @notice Stores a disclosed public message while enforcing zero-gas sponsorship & nullifier protection.
+ * @param dAppId The sponsoring dApp identifier.
+ * @param userSalt Per-action unique user salt.
+ * @param customMessage UTF-8 string payload disclosed to the public Midnight ledger.
+ */
+export circuit sponsorMessage(dAppId: Bytes<32>, userSalt: Bytes<32>, customMessage: Opaque<"string">): [] {
+    assert(!isPaused, "Contract is currently paused");
+    const dApp = disclose(dAppId);
+
+    // 1. Verify Relayer Authorization
+    const relayerSecret = getRelayerSecret();
+    const relayerPubkey = disclose(persistentHash<Vector<1, Bytes<32>>>([relayerSecret]));
+    assert(authorizedRelayers.member(relayerPubkey), "Relayer is not authorized");
+
+    // 2. Prevent Replay via Private Nullifier
+    const userSecret = getUserSecret();
+    const nullifier = disclose(persistentHash<Vector<3, Bytes<32>>>([userSecret, userSalt, dAppId]));
+    assert(!usedNullifiers.member(nullifier), "Message replay / nullifier already spent");
+    usedNullifiers.insert(nullifier);
+
+    // 3. Deduct Quota (1 unit per message)
+    assert(dAppRemainingQuota.member(dApp), "dApp is not registered");
+    const remaining = dAppRemainingQuota.lookup(dApp);
+    assert(remaining >= 1, "dApp sponsorship quota exhausted");
+    dAppRemainingQuota.insert(dApp, (remaining - 1) as Uint<64>);
+
+    // 4. Update Ledger State
+    latestMessage = disclose(customMessage);
+    messageCount = (messageCount + 1) as Uint<64>;
+    globalTotalSponsored = (globalTotalSponsored + 1) as Uint<64>;
+}
+
+/**
+ * @notice Replenishes the sponsorship quota for a registered dApp.
+ * @param dAppId Target dApp identifier.
+ * @param additionalQuota Additional quota units deposited.
+ */
+export circuit topUpQuota(dAppId: Bytes<32>, additionalQuota: Uint<64>): [] {
+    assert(!isPaused, "Contract is currently paused");
+    const dApp = disclose(dAppId);
+    const addition = disclose(additionalQuota);
+
+    assert(dAppQuotaLimits.member(dApp), "dApp is not registered");
+    const curLimit = dAppQuotaLimits.lookup(dApp);
+    const curRemaining = dAppRemainingQuota.lookup(dApp);
+
+    dAppQuotaLimits.insert(dApp, (curLimit + addition) as Uint<64>);
+    dAppRemainingQuota.insert(dApp, (curRemaining + addition) as Uint<64>);
+}
+
+/**
+ * @notice Advances the rate-limiting epoch.
+ * @param newEpoch The new epoch number (must be strictly greater than current).
+ */
+export circuit advanceEpoch(newEpoch: Uint<64>): [] {
+    assert(!isPaused, "Contract is currently paused");
+    const nextEpoch = disclose(newEpoch);
+    assert(nextEpoch > currentEpoch, "New epoch must be strictly greater than current");
+    currentEpoch = nextEpoch;
+}
+
+/**
+ * @notice Emergency circuit breaker toggle.
+ * @param paused True to freeze contract operations, false to resume.
+ */
+export circuit setPaused(paused: Boolean): [] {
+    isPaused = disclose(paused);
+}

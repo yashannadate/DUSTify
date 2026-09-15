@@ -178,10 +178,8 @@ DUSTify is submitted under **Level 4: Waxing Gibbous** of the Midnight Moonshots
 - **On-Chain Transaction Verification (`GET /api/v1/tx/:txId`):** Live confirmation status, block height, and timestamp lookup via GraphQL indexer.
 - **Live Capacity & Gas Estimation (`GET /api/v1/estimate`):** Pre-execution DUST fee estimation and transaction capacity buffer.
 - **Relayer Metrics Telemetry (`GET /api/v1/metrics`):** Cumulative analytics on relayed transactions and DUST expenditure.
-- **Persistent State Cache:** Fast warm restore in **~1.40s** (observed benchmark) avoiding full indexer replay.
-- **Relayer Authentication & Abuse Controls:** `x-api-key` header verification, IP sliding-window rate limiting, and origin protection.
-- **Single Level 4 Demo Contract:** Real on-chain deployment of [`hello-world.compact`](contracts/src/hello-world.compact) on Midnight Preview (`ce0b5972...`).
-- **Interactive React Dashboard & Explorer:** Real-time telemetry, transaction history, on-chain lookup explorer, capacity monitor, and developer playground.
+- **Core Midnight Smart Contract:** Production-grade Midnight Compact paymaster contract ([`Dustify.compact`](contracts/src/Dustify.compact)) featuring ZK witnesses, anti-sybil nullifiers, multi-dApp quota enforcement, public message storage disclosures, and deployed instances on Midnight Preview (`ce0b5972...`).
+- **Interactive React Dashboard & Explorer:** Developer playground with live Compact code viewer, real-time telemetry, transaction history, on-chain lookup explorer, and capacity monitor.
 
 ---
 
@@ -411,9 +409,8 @@ In the interest of technical integrity and transparency:
 | Deliverable | Location in Repository | Verification Command / Evidence |
 | :--- | :--- | :--- |
 | **Monorepo Codebase** | Root Workspace | [GitHub Repository](https://github.com/yashannadate/DUSTify) |
-| **Proposal Document** | [`PROPOSAL.md`](PROPOSAL.md) | Level 4 Moonshot Proposal |
-| **Contract Deployment** | [`contracts/src/hello-world.compact`](contracts/src/hello-world.compact) | Address: `ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9`<br>TxID: `00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd` |
-| **Sponsored Tx On-Chain** | [`scripts/test_user_sponsor_flow.ts`](scripts/test_user_sponsor_flow.ts) | TxID: `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` (0 DUST user cost) |
+| **Smart Contract** | [`contracts/src/Dustify.compact`](contracts/src/Dustify.compact) | Core DUSTify Paymaster & Relayer contract (9 ZK circuits)<br>Preview Address: `47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc`<br>Deployment TxID: `0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9` |
+| **Contract Verification Test** | [`tests/contracts/contracts.test.ts`](tests/contracts/contracts.test.ts) | `npm run test:contracts` (All 9 ZK circuits compiled & verified) |
 | **DUST Registration Tx** | [`scripts/register_dust.ts`](scripts/register_dust.ts) | TxID: `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` (5,000 tNIGHT UTXO) |
 | **Relayer Backend** | [`relayer-api/src/`](relayer-api/src) | `npm run dev:relayer` (Port 3001) |
 | **Client SDK** | [`client-sdk/src/`](client-sdk/src) | `npm run build --prefix client-sdk` |

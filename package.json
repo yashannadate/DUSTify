@@ -11,14 +11,17 @@
   ],
   "scripts": {
     "build": "npm run build --prefix client-sdk && npm run build --prefix frontend",
+    "build:contracts": "node contracts/scripts/build_all.js",
     "build:sdk": "wsl bash -c \"cd /mnt/d/DUSTify/client-sdk && npm run build\"",
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:relayer": "wsl bash -c \"cd /mnt/d/DUSTify/relayer-api && npx tsx src/index.ts\"",
     "dev:relayer:linux": "npm run dev --prefix relayer-api",
+    "test:contracts": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/contracts/contracts.test.ts\"",
     "test:unit": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/unit/sdk-serialization.test.ts\"",
     "test:relayer": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/integration/test-relayer-endpoints.ts\"",
     "test:sdk": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/integration/test-sdk-client.ts\"",
-    "test:sponsorship": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/sponsorship/real-world-validation.ts\""
+    "test:sponsorship": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/sponsorship/real-world-validation.ts\"",
+    "deploy": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx scripts/deploy_contract.ts\""
   },
   "keywords": [
     "midnight",
