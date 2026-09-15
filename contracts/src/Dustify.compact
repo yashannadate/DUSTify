@@ -7,6 +7,10 @@ import CompactStandardLibrary;
 // Engineered for the Midnight Network (Kachina Protocol).
 // Decouples Zero-Knowledge witness computation from transaction fee payment.
 //
+// Network Deployment: Midnight Preview Network
+// Contract Address:   47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc
+// Deployment TxID:    0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9
+//
 // Key Capabilities:
 // 1. Paymaster Quota Engine: Multi-dApp registration and rate-limited quotas.
 // 2. Relayer Whitelist: Authorized relayers verified via private witnesses.
