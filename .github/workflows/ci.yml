@@ -19,25 +19,25 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install Monorepo Dependencies
+        run: npm install
+
       - name: Build Client SDK
         run: |
           cd client-sdk
-          npm install
           npm run build
 
       - name: Build Frontend Application
         run: |
           cd frontend
-          npm install
           npm run build
 
       - name: Run SDK Unit Tests
         run: |
-          cd client-sdk
-          npx tsx ../tests/unit/sdk-serialization.test.ts
+          npx tsx tests/unit/sdk-serialization.test.ts
 
       - name: Validate Relayer API Types
         run: |
           cd relayer-api
-          npm install
           npx tsc --noEmit
+

@@ -13,6 +13,6 @@
     "cli": "node scripts/build_all.js"
   },
   "dependencies": {
-    "@midnight-ntwrk/compact-runtime": "^0.5.1"
+    "@midnight-ntwrk/compact-runtime": "^0.16.0"
   }
 }
