@@ -16,11 +16,12 @@
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:relayer": "wsl bash -c \"cd /mnt/d/DUSTify/relayer-api && npx tsx src/index.ts\"",
     "dev:relayer:linux": "npm run dev --prefix relayer-api",
-    "test:contracts": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/contracts/contracts.test.ts\"",
-    "test:unit": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/unit/sdk-serialization.test.ts\"",
-    "test:relayer": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/integration/test-relayer-endpoints.ts\"",
-    "test:sdk": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/integration/test-sdk-client.ts\"",
-    "test:sponsorship": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/sponsorship/real-world-validation.ts\"",
+    "test": "npm run test:contracts && npm run test:unit",
+    "test:contracts": "npm run test --prefix contracts",
+    "test:unit": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx client-sdk/test/sdk-serialization.test.ts\"",
+    "test:relayer": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx relayer-api/test/test-relayer-endpoints.ts\"",
+    "test:sdk": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx client-sdk/test/test-sdk-client.ts\"",
+    "test:sponsorship": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx relayer-api/test/sponsorship-experiment.ts\"",
     "deploy": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx scripts/deploy_contract.ts\""
   },
   "keywords": [
@@ -31,5 +32,8 @@
     "zero-knowledge"
   ],
   "author": "Yash Annadate",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "^0.15.0"
+  }
 }

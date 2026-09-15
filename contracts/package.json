@@ -7,12 +7,12 @@
     "build": "node scripts/build_all.js",
     "compile": "node scripts/build_all.js",
     "build:contracts": "node scripts/build_all.js",
-    "test": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/contracts/contracts.test.ts\"",
-    "test:contracts": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx tests/contracts/contracts.test.ts\"",
+    "test": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx contracts/test/contracts.test.ts\"",
+    "test:contracts": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx contracts/test/contracts.test.ts\"",
     "deploy": "wsl bash -c \"cd /mnt/d/DUSTify && npx tsx scripts/deploy_contract.ts\"",
     "cli": "node scripts/build_all.js"
   },
   "dependencies": {
-    "@midnight-ntwrk/compact-runtime": "^0.16.0"
+    "@midnight-ntwrk/compact-runtime": "^0.15.0"
   }
 }

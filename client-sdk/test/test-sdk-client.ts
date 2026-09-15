@@ -1,4 +1,4 @@
-import { DustifyClient } from '../../client-sdk/src/DustifyClient.js';
+import { DustifyClient } from '../src/DustifyClient.js';
 
 async function testSdk() {
   console.log('Testing DustifyClient SDK against live relayer...');
@@ -37,4 +37,3 @@ async function testSdk() {
 testSdk().catch(err => {
   console.error('SDK test error:', err.message);
 });
-

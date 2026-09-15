@@ -1,5 +1,5 @@
-import { MidnightSponsorService } from '../../relayer-api/src/services/midnight.js';
-import { loadConfig } from '../../relayer-api/src/config.js';
+import { MidnightSponsorService } from '../src/services/midnight.js';
+import { loadConfig } from '../src/config.js';
 
 async function stepACheckFunding() {
   console.log('================================================================');

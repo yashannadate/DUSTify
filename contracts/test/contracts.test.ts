@@ -4,14 +4,13 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '../..');
+const contractDir = path.resolve(__dirname, '../managed/dustify');
 
 async function testContracts() {
   console.log('================================================================');
   console.log('🧪 Running DUSTify Smart Contract Verification Suite');
   console.log('================================================================\n');
 
-  const contractDir = path.join(rootDir, 'contracts', 'managed', 'dustify');
   const zkirDir = path.join(contractDir, 'zkir');
   const contractModulePath = path.join(contractDir, 'contract', 'index.js');
   const dtsPath = path.join(contractDir, 'contract', 'index.d.ts');

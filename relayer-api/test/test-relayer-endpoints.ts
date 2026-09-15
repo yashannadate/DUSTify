@@ -1,5 +1,5 @@
-import { MidnightSponsorService } from '../../relayer-api/src/services/midnight.js';
-import { config } from '../../relayer-api/src/config.js';
+import { MidnightSponsorService } from '../src/services/midnight.js';
+import { config } from '../src/config.js';
 
 async function testRelayerService() {
   console.log('Testing MidnightSponsorService initialization & status check...');

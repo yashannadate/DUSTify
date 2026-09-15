@@ -7,6 +7,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npx -y -p typescript tsc",
+    "test": "npx tsx test/sdk-serialization.test.ts",
+    "test:sdk": "npx tsx test/test-sdk-client.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

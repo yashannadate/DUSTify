@@ -372,7 +372,7 @@ All core functionality is accompanied by automated build, typecheck, and test sc
 cd client-sdk && npm run build
 
 # 2. Run SDK Serialization Unit Test
-npx tsx tests/unit/sdk-serialization.test.ts
+npx tsx client-sdk/test/sdk-serialization.test.ts
 
 # 3. Typecheck Relayer API
 cd relayer-api && npx tsc --noEmit
@@ -385,7 +385,8 @@ cd frontend && npm run build
 
 | Test Suite | Command | Expected Output | Status |
 | :--- | :--- | :--- | :---: |
-| **SDK Unit Test** | `npx tsx tests/unit/sdk-serialization.test.ts` | `All Unit Tests Passed` | 🟢 PASS |
+| **SDK Unit Test** | `npm run test:unit` | `All Unit Tests Passed` | 🟢 PASS |
+| **Contract Verification** | `npm run test:contracts` | `DUSTIFY SMART CONTRACT VERIFICATION PASSED!` | 🟢 PASS |
 | **Relayer Typecheck** | `cd relayer-api && npx tsc --noEmit` | Exit code 0, 0 errors | 🟢 PASS |
 | **Frontend Bundle** | `cd frontend && npm run build` | `dist/` built in <8s, 0 errors | 🟢 PASS |
 | **CI/CD Workflow** | `.github/workflows/ci.yml` | Automated build on push/PR | 🟢 PASS |
@@ -410,15 +411,15 @@ In the interest of technical integrity and transparency:
 | :--- | :--- | :--- |
 | **Monorepo Codebase** | Root Workspace | [GitHub Repository](https://github.com/yashannadate/DUSTify) |
 | **Smart Contract** | [`contracts/src/Dustify.compact`](contracts/src/Dustify.compact) | Core DUSTify Paymaster & Relayer contract (9 ZK circuits)<br>Preview Address: `47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc`<br>Deployment TxID: `0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9` |
-| **Contract Verification Test** | [`tests/contracts/contracts.test.ts`](tests/contracts/contracts.test.ts) | `npm run test:contracts` (All 9 ZK circuits compiled & verified) |
+| **Contract Verification Test** | [`contracts/test/contracts.test.ts`](contracts/test/contracts.test.ts) | `npm run test:contracts` (All 9 ZK circuits compiled & verified) |
 | **DUST Registration Tx** | [`scripts/register_dust.ts`](scripts/register_dust.ts) | TxID: `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` (5,000 tNIGHT UTXO) |
 | **Relayer Backend** | [`relayer-api/src/`](relayer-api/src) | `npm run dev:relayer` (Port 3001) |
 | **Client SDK** | [`client-sdk/src/`](client-sdk/src) | `npm run build --prefix client-sdk` |
 | **Frontend Application** | [`frontend/src/`](frontend/src) | `npm run dev:frontend` (Port 5173) |
 | **CI/CD Workflow** | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | [GitHub Actions Runs](https://github.com/yashannadate/DUSTify/actions) |
-| **Telemetry Test** | [`tests/integration/test-relayer-endpoints.ts`](tests/integration/test-relayer-endpoints.ts) | `npm run test:relayer` |
-| **SDK Integration Test** | [`tests/integration/test-sdk-client.ts`](tests/integration/test-sdk-client.ts) | `npm run test:sdk` |
-| **Unit Test Suite** | [`tests/unit/sdk-serialization.test.ts`](tests/unit/sdk-serialization.test.ts) | `npm run test:unit` |
+| **Telemetry Test** | [`relayer-api/test/test-relayer-endpoints.ts`](relayer-api/test/test-relayer-endpoints.ts) | `npm run test:relayer` |
+| **SDK Integration Test** | [`client-sdk/test/test-sdk-client.ts`](client-sdk/test/test-sdk-client.ts) | `npm run test:sdk` |
+| **Unit Test Suite** | [`client-sdk/test/sdk-serialization.test.ts`](client-sdk/test/sdk-serialization.test.ts) | `npm run test:unit` |
 | **Architecture Specification** | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Markdown Architecture Deep-Dive |
 | **Protocol Validation Report** | [`docs/PROTOCOL_VALIDATION.md`](docs/PROTOCOL_VALIDATION.md) | Empirical verification results & on-chain proofs |
 | **Security & Threat Model** | [`docs/SECURITY.md`](docs/SECURITY.md) | Security & Trust Specification |

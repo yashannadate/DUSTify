@@ -1,4 +1,3 @@
-import { createUnprovenCallTx, submitTx } from '@midnight-ntwrk/midnight-js-contracts';
 import type { UnprovenTransaction } from '@midnight-ntwrk/midnight-js-protocol/ledger';
 
 /**
@@ -28,7 +27,6 @@ export async function runSponsorshipExperiment(
   
   // Simulated UnprovenTransaction payload produced by createUnprovenCallTx
   const mockUnprovenTx: UnprovenTransaction = {
-    // In live network runtime, this is populated by local prover & zkConfigProvider
     __type: 'UnprovenTransaction'
   } as any;
 
@@ -49,7 +47,6 @@ export async function runSponsorshipExperiment(
   console.log('[Identity B - Sponsor] Verifying API Key, CORS Origin, & Quota allowance...');
   console.log('[Identity B - Sponsor] Attaching DUST fees using Sponsor Master WalletProvider...');
 
-  // In live runtime, Sponsor calls: submitTx(relayerProviders, { unprovenTx: mockUnprovenTx, circuitId: mockCircuitId })
   const mockTxHash = `0xmidnight_${Buffer.from(payloadString).toString('hex').slice(0, 40)}`;
 
   console.log(`[Identity B - Sponsor] Transaction balanced, signed with DUST fee inputs, & broadcast.`);
@@ -64,7 +61,7 @@ export async function runSponsorshipExperiment(
   };
 }
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   runSponsorshipExperiment()
     .then((result) => console.log('\nFinal Experiment Output:', result))
     .catch((err) => console.error('Experiment Failed:', err));

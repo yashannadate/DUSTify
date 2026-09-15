@@ -34,7 +34,11 @@ jobs:
 
       - name: Run SDK Unit Tests
         run: |
-          npx tsx tests/unit/sdk-serialization.test.ts
+          npx tsx client-sdk/test/sdk-serialization.test.ts
+
+      - name: Verify Contract Circuit Artifacts
+        run: |
+          npx tsx contracts/test/contracts.test.ts
 
       - name: Validate Relayer API Types
         run: |
