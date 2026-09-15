@@ -110,7 +110,7 @@ On-chain transaction status and block confirmation lookup.
 ```json
 {
   "status": "CONFIRMED",
-  "txId": "00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd",
+  "txId": "0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9",
   "network": "preview",
   "sponsorAddress": "mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd",
   "sponsoredDustFee": "0.0042 DUST",
@@ -147,8 +147,8 @@ Authenticated transaction sponsorship submission endpoint.
 ```json
 {
   "payloadHex": "00112233445566778899aabbccddeeff...",
-  "circuitId": "storeMessage",
-  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9"
+  "circuitId": "sponsorTransaction",
+  "contractAddress": "47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc"
 }
 ```
 
@@ -156,9 +156,9 @@ Authenticated transaction sponsorship submission endpoint.
 ```json
 {
   "status": "SUBMITTED",
-  "txId": "003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c",
-  "circuitId": "storeMessage",
-  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9",
+  "txId": "0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9",
+  "circuitId": "sponsorTransaction",
+  "contractAddress": "47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc",
   "sponsoredDustFee": "0.0042 DUST",
   "timestamp": 1724698000000
 }

@@ -8,9 +8,18 @@ DUSTify enables Midnight dApps to sponsor transaction fees for users. Users gene
 [![Network](https://img.shields.io/badge/Network_ID-preview-001EFF)](https://indexer.preview.midnight.network)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-passing-brightgreen?logo=github-actions&logoColor=white)](https://github.com/yashannadate/DUSTify/actions)
 
+### 🌐 [Live App (https://dustify-midnight.vercel.app)](https://dustify-midnight.vercel.app) • 🎥 [Demo Video](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6)
+
 ---
 
-### 🌐 [Live App (https://dustify-midnight.vercel.app)](https://dustify-midnight.vercel.app) • 🎥 [Demo Video](https://drive.google.com/drive/folders/1gIjgNqdXhDRKjw-XyILOnRY8HyP29qY6)
+> ### 🚀 Live Midnight Preview Deployment & Contract Info
+> | Property | On-Chain Value / Preview Details |
+> | :--- | :--- |
+> | **Smart Contract** | [`contracts/src/Dustify.compact`](contracts/src/Dustify.compact) *(Unified Paymaster, Relayer Auth & Quota Engine - 9 ZK Circuits)* |
+> | **Contract Address** | `47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc` |
+> | **Deployment TxID** | `0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9` |
+> | **Master Sponsor Address** | `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd` *(Funded with 5,000 tNIGHT; Active DUST Capacity)* |
+> | **Network RPC / Indexer** | `wss://rpc.preview.midnight.network` • `https://indexer.preview.midnight.network/api/v4/graphql` |
 
 ---
 
@@ -62,7 +71,7 @@ DUSTify decouples **application zero-knowledge proof generation** from **transac
 1. **Zero-Gas User Entry:** Opening the DUSTify frontend with 0 DUST in user wallet (0 DUST paid by the end user).
 2. **Preview Network Connectivity:** Real-time pulse indicator confirming Midnight Preview connection (`wss://rpc.preview.midnight.network`).
 3. **Relayer Telemetry Check:** Live inspection of Relayer health, applied block index, and Master Sponsor address.
-4. **Local Witness Proving:** State mutation in `hello-world.compact` evaluated locally on client (private witness remains in client memory).
+4. **Local Witness Proving:** State mutation in `Dustify.compact` evaluated locally on client (private witness remains in client memory).
 5. **WASM Binary Handoff:** Client SDK serializing `UnboundTransaction` and transmitting over authenticated HTTP.
 6. **Sponsor Fee Attachment:** Backend Relayer executing `balanceUnboundTransaction()` with Master Sponsor Wallet.
 7. **Recipe Sealing:** `finalizeRecipe()` converting recipe to `FinalizedTransaction`.
@@ -102,7 +111,7 @@ To verify and run DUSTify locally against the live Midnight Preview Network:
    ```
 6. **Open Dashboard:** Navigate to `http://localhost:5173` in your browser.
 7. **Check Relayer Health:** Verify live sync and DUST capacity on the **Relayer Health** tab or `GET /api/v1/status`.
-8. **Execute Demo Transaction:** Open the **Playground** tab to trigger a sponsored state mutation on `hello-world.compact`.
+8. **Execute Demo Transaction:** Open the **Playground** tab to trigger a sponsored state mutation on `Dustify.compact`.
 9. **Verify On-Chain:** Inspect the resulting transaction hash via Midnight Preview GraphQL Indexer.
 
 ---
@@ -178,7 +187,7 @@ DUSTify is submitted under **Level 4: Waxing Gibbous** of the Midnight Moonshots
 - **On-Chain Transaction Verification (`GET /api/v1/tx/:txId`):** Live confirmation status, block height, and timestamp lookup via GraphQL indexer.
 - **Live Capacity & Gas Estimation (`GET /api/v1/estimate`):** Pre-execution DUST fee estimation and transaction capacity buffer.
 - **Relayer Metrics Telemetry (`GET /api/v1/metrics`):** Cumulative analytics on relayed transactions and DUST expenditure.
-- **Core Midnight Smart Contract:** Production-grade Midnight Compact paymaster contract ([`Dustify.compact`](contracts/src/Dustify.compact)) featuring ZK witnesses, anti-sybil nullifiers, multi-dApp quota enforcement, public message storage disclosures, and deployed instances on Midnight Preview (`ce0b5972...`).
+- **Core Midnight Smart Contract:** Production-grade Midnight Compact paymaster contract ([`Dustify.compact`](contracts/src/Dustify.compact)) featuring ZK witnesses, anti-sybil nullifiers, multi-dApp quota enforcement, public message storage disclosures, and deployed instances on Midnight Preview (`47d3df8c...`).
 - **Interactive React Dashboard & Explorer:** Developer playground with live Compact code viewer, real-time telemetry, transaction history, on-chain lookup explorer, and capacity monitor.
 
 ---
@@ -210,8 +219,8 @@ const unboundTx = await proofProvider.proveTx(unprovenTx);
 
 // 3. One-line gas sponsorship and on-chain submission
 const receipt = await dustify.sponsorAndSubmit(unboundTx, {
-  circuitId: 'storeMessage',
-  contractAddress: 'ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9',
+  circuitId: 'sponsorTransaction',
+  contractAddress: '47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc',
 });
 
 if (receipt.status === 'SUBMITTED') {
@@ -230,12 +239,12 @@ console.log('Relayer Network:', status.network);
 console.log('Available DUST:', status.sponsorDustAvailability.balanceDust);
 
 // 2. Pre-execution Capacity Estimation
-const estimate = await dustify.getCapacityEstimate('storeMessage');
+const estimate = await dustify.getCapacityEstimate('sponsorTransaction');
 console.log('Estimated DUST Fee:', estimate.estimatedDustFee);
 console.log('Remaining Sponsored Txs:', estimate.estimatedTransactionsRemaining);
 
 // 3. On-Chain Transaction Verification
-const tx = await dustify.getTransactionStatus('00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd');
+const tx = await dustify.getTransactionStatus('0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9');
 console.log('Confirmation Status:', tx.status);
 console.log('Block Height:', tx.blockHeight);
 ```
@@ -291,8 +300,8 @@ Authenticated transaction sponsorship endpoint.
 ```json
 {
   "payloadHex": "00112233445566778899aabbccddeeff...",
-  "circuitId": "storeMessage",
-  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9"
+  "circuitId": "sponsorTransaction",
+  "contractAddress": "47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc"
 }
 ```
 
@@ -300,9 +309,9 @@ Authenticated transaction sponsorship endpoint.
 ```json
 {
   "status": "SUBMITTED",
-  "txId": "003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c",
-  "circuitId": "storeMessage",
-  "contractAddress": "ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9",
+  "txId": "0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9",
+  "circuitId": "sponsorTransaction",
+  "contractAddress": "47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc",
   "sponsoredDustFee": "0.0042 DUST",
   "timestamp": 1724698000000
 }
@@ -351,9 +360,9 @@ DUSTify is verified and operational on the **Midnight Preview Network**:
 
 | Property | Value / Identifier | Notes |
 | :--- | :--- | :--- |
-| **Deployed Contract** | `hello-world.compact` | Single Level 4 demonstration contract |
-| **Contract Address** | `ce0b5972a303044c51bcaa14cd4acacabef944a09ef67464a2da51046a7af5d9` | Deployed on Midnight Preview |
-| **Contract Deployment TxID** | `00fdde9e4dd2ea2425bf0c77108be70d83301474d87c36b51233d8af95126caccd` | Real on-chain deployment transaction |
+| **Deployed Contract** | [`Dustify.compact`](contracts/src/Dustify.compact) | Unified Paymaster, Quota Engine & Relayer Auth (9 ZK Circuits) |
+| **Contract Address** | `47d3df8c1670fd8aae7a110d0f489c25710a0055f827fce50eca91bf59972cfc` | Deployed on Midnight Preview |
+| **Contract Deployment TxID** | `0026722c0d7df30f2815868ddcf930497da826f9db5fec2d2d315830230ef789d9` | Real on-chain deployment transaction |
 | **Master Sponsor Address** | `mn_addr_preview19y0dne42duqurduex2hnmju94pjtm4gx44rltpmnsqk382llf4hq5tlkgd` | Funded with 5,000 tNIGHT; Active DUST Capacity Generator |
 | **DUST Registration TxID** | `0050c425ed0b0625e3767ebf0b269754b8320fefbaa079d4197c778f9be29dd9a7` | Real on-chain NIGHT UTXO registration for continuous DUST generation |
 | **Verified Sponsored TxID** | `003986f9b5fb20f3a320ac0b2a744ef96fd2581334608a1a3a5371b300c84d9d4c` | Real on-chain sponsored transaction (0 DUST paid by end user) |
